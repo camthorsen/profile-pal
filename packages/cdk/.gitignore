@@ -1,0 +1,17 @@
+# Use this file in preference to .prettierignore so that other tools can use the same exclusions.
+
+# AWS SAM
+.aws-sam/
+
+# CDK asset staging directory
+.cdk.staging/
+.cdk.out/
+
+# Dependencies
+node_modules/
+
+# Distribution directory
+.dist/
+
+# Testing
+coverage/

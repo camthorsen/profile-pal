@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true, // not in parent, why?
+    "esModuleInterop": false, // why false?
+    "jsx": "react-jsx",
+    "lib": [
+      "DOM", //
+      "DOM.Iterable",
+      "ESNext",
+    ],
+    "types": ["@testing-library/jest-dom"],
+    "useDefineForClassFields": true,
+  },
+  "include": [
+    "src", //
+  ],
+  "references": [{ "path": "./tsconfig.node.json" }],
+}

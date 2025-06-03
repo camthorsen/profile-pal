@@ -1,0 +1,20 @@
+{
+  "name": "node-monorepo-workspace-template",
+  "version": "1.2.5",
+  "private": true,
+  "description": "Template for new workspace",
+  "keywords": [],
+  "license": "UNLICENSED",
+  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./mod.ts"
+    }
+  },
+  "scripts": {
+    "ws": "node --import tsx ../../scripts/run-workspace-script.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
