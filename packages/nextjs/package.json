@@ -10,9 +10,12 @@
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts"
   },
   "dependencies": {
+    "browser-image-compression": "^2.0.2",
+    "formidable": "^3.5.4",
     "next": "15.3.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-mic": "^12.4.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.1.7",
