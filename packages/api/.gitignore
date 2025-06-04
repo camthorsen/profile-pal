@@ -1,0 +1,9 @@
+# Caches
+.cache/
+
+# Model binaries
+models/**/*.bin
+models/**/*.gguf
+models/**/*.h5
+models/**/*.msgpack
+models/**/*.safetensors

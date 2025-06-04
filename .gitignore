@@ -49,12 +49,12 @@ logs
 # OS files
 .DS_Store
 
+# Python
+__pycache__/
+
 # Testing
 coverage/
 .vitest-result.json
 
 # TypeScript
 *.tsbuildinfo
-
-# Downloaded models
-packages/api/models/
