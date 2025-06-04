@@ -18,6 +18,7 @@ llama-cpp-python = { version = "^0.2.72", extras = ["server"] }
 torch = "2.2.2"
 numpy = "^1.26"
 python-multipart = "^0.0.20"
+pydub = "^0.25.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
