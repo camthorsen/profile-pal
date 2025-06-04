@@ -55,3 +55,6 @@ coverage/
 
 # TypeScript
 *.tsbuildinfo
+
+# Downloaded models
+packages/api/models/
