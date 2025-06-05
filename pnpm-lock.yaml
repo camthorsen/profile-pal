@@ -81,6 +81,9 @@ importers:
 
   packages/nextjs:
     dependencies:
+      '@williamthorsen/toolbelt.objects':
+        specifier: 3.0.2
+        version: 3.0.2
       browser-image-compression:
         specifier: ^2.0.2
         version: 2.0.2

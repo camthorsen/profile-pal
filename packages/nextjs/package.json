@@ -10,6 +10,7 @@
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts"
   },
   "dependencies": {
+    "@williamthorsen/toolbelt.objects": "3.0.2",
     "browser-image-compression": "^2.0.2",
     "formidable": "^3.5.4",
     "next": "15.3.3",
