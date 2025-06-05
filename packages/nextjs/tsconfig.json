@@ -2,7 +2,9 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
     "baseUrl": ".",
+    "exactOptionalPropertyTypes": false,
     "incremental": true,
     "jsx": "preserve",
     "lib": [
@@ -12,6 +14,7 @@
     ],
     // if this is set to anything other than `esnext`, Next.js will replace it with `esnext`
     "module": "esnext",
+    "moduleResolution": "bundler",
     "paths": {
       "@/*": ["src/*"],
     },
@@ -22,12 +25,13 @@
     ],
     // inherited, but Next.js assumes `false` (and issues a warning) if not explicitly set
     "strict": true,
-    "target": "ES2017",
+    "target": "ES2018",
   },
   "include": [
     "*.ts", //
     "*.tsx",
     "next-env.d.ts",
+    "scripts/",
     "src/",
     ".next/types/**/*.ts",
   ],
