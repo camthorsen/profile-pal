@@ -1,9 +1,9 @@
-// packages/nextjs/app/api/process-profile/route.ts
-import { NextRequest } from 'next/server';
+import { isObject } from '@williamthorsen/toolbelt.objects';
+import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs'; // or 'edge' if using server-side fs access
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<Response> {
   const formData = await req.formData();
   const audio = formData.get('audio');
 
@@ -23,11 +23,12 @@ export async function POST(req: NextRequest) {
     return new Response(await resp.text(), { status: resp.status });
   }
 
-  const data = await resp.json();
+  const data: unknown = await resp.json();
+  const summary = isObject(data) && 'text' in data ? data.text : 'No text found in response';
 
   // TEMP: since CLIP + Mistral not ready, return dummy values for `tags` and `summary`
   return Response.json({
     tags: ['placeholder'],
-    summary: data.text,
+    summary,
   });
 }

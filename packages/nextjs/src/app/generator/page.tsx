@@ -1,10 +1,9 @@
-// app/page.tsx
 'use client'; // ← This file uses React hooks, so it must run in the browser
 
-import { useState, useRef, type ChangeEvent, type FormEvent } from 'react';
-import Image from 'next/image';
 import imageCompression from 'browser-image-compression';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
+import { type ChangeEvent, type FormEvent, type ReactElement, useRef, useState } from 'react';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
   ssr: false,
@@ -15,7 +14,7 @@ interface ProfileResponse {
   summary: string; // 1–2 paragraphs of descriptive text
 }
 
-export default function GeneratorPage() {
+export default function GeneratorPage(): ReactElement {
   // —— State for image upload/compression —— //
   const [rawImageFile, setRawImageFile] = useState<File | null>(null);
   const [compressedImage, setCompressedImage] = useState<File | null>(null);
@@ -34,7 +33,7 @@ export default function GeneratorPage() {
   /**
    * 1) Handle image selection from disk and compress it client‐side.
    */
-  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     setRawImageFile(file);
@@ -53,8 +52,8 @@ export default function GeneratorPage() {
         lastModified: Date.now(),
       });
       setCompressedImage(compressedFile);
-    } catch (err) {
-      console.error('Image compression failed:', err);
+    } catch (error) {
+      console.error('Image compression failed:', error);
       // If compression fails, fall back to the original file
       setCompressedImage(file);
     }
@@ -63,21 +62,21 @@ export default function GeneratorPage() {
   /**
    * 2A) Handle when a user uploads an existing audio file from disk.
    */
-  const handleAudioUploadChange = (e: ChangeEvent<HTMLInputElement>) => {
+  function handleAudioUploadChange(e: ChangeEvent<HTMLInputElement>): void {
     if (!e.target.files || e.target.files.length === 0) return;
     setAudioFile(e.target.files[0]);
-  };
+  }
 
   /**
    * 2B) In-browser recording with ReactMic
    */
-  const toggleRecording = () => {
+  function toggleRecording() {
     setIsRecording((prev) => !prev);
-  };
-  const onData = (recordedChunk: Blob) => {
+  }
+  function onData(recordedChunk: Blob) {
     // We could process streaming chunks here; for MVP we just ignore intermediate data
-  };
-  const onStop = (recordedData: { blob: Blob }) => {
+  }
+  function onStop(recordedData: { blob: Blob }) {
     // Once recording stops, we get a Blob. Wrap it in a File so we can attach to FormData
     setRecordingBlob(recordedData.blob);
     const fileFromBlob = new File([recordedData.blob], 'recorded_audio.webm', {
@@ -85,12 +84,12 @@ export default function GeneratorPage() {
       lastModified: Date.now(),
     });
     setAudioFile(fileFromBlob);
-  };
+  }
 
   /**
    * 3) Package compressedImage + audioFile into FormData and POST to the API route.
    */
-  const handleSubmit = async (e: FormEvent) => {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
     if (!compressedImage || !audioFile) {
@@ -116,11 +115,11 @@ export default function GeneratorPage() {
 
       const data: ProfileResponse = await resp.json();
       setResponseData(data);
-    } catch (err) {
-      console.error('Error calling /api/process-profile:', err);
+    } catch (error) {
+      console.error('Error calling /api/process-profile:', error);
       alert('Something went wrong generating the profile. Check console for details.');
     }
-  };
+  }
 
   return (
     <div className="max-w-xl mx-auto p-6 space-y-6">
