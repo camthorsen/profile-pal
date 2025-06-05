@@ -1,16 +1,12 @@
-
-
-
-
-
 ## If no CPU for torch is available, you can use the following command to install the CPU version of PyTorch:
 
 ```bash
 $ poetry add torch --platform macosx_10_9_x86_64
 ```
+
 (Replace `macosx_10_9_x86_64` with your platform)
 
-or 
+or
 
 ```bash
 pip install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu

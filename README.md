@@ -1,17 +1,24 @@
 # Pet Profile Generator: Monorepo
 
 # Command sequence for evaluators
+
 FIXME: To be updated
 
-## — 1: Python side — #
+## — 1: Python side —
+
 cd packages/api
+
 ### 1.1: Install Poetry dependencies
+
 poetry install
+
 ### 1.2: (If no GPU) Install CPU‐only PyTorch
+
 poetry run pip install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 (This one didn't work for me, so I had to install the CPU version of PyTorch manually:)
 
 Also did this:
+
 ```bash
 pip install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 ```
@@ -19,25 +26,30 @@ pip install --upgrade torch torchvision torchaudio --index-url https://download.
 ```bash
 $ poetry add torch --platform macosx_10_9_x86_64
 ```
+
 ### 1.3: Download all model weights (~4.8 GB)
+
 poetry run python download_models.py
+
 ### 1.4: Start the FastAPI server
+
 poetry run uvicorn api_app.main:app --host 0.0.0.0 --port 8000
 
 (Leave this terminal open; it’s serving /transcribe, /clip_tags, /summarize)
 
+## — 2: Next.js side —
 
-## — 2: Next.js side — #
 cd packages/nextjs
+
 ### 2.1: Install pnpm dependencies
+
 pnpm install
+
 ### 2.2: Start Next.js dev server
+
 pnpm dev
 
 Now open http://localhost:5181/ in your browser.
-
-
-
 
 ## Getting started
 

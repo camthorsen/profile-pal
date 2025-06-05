@@ -1,7 +1,7 @@
 // packages/api/src/transcribe.ts
 import { execFile } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import { promisify } from 'node:util';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -15,13 +15,20 @@ export async function transcribe(filePath: string): Promise<string> {
   const workDir = await mkdtemp(join(tmpdir(), 'whisper-out-'));
 
   try {
-    await execFileAsync(WHISPER_BIN, [
-      '-m', MODEL_PATH,
-      '-f', filePath,
-      '-otxt',
-      '-of', 'out', // saves as out.txt
-      '-osrt',      // suppress optional formats
-    ], { cwd: workDir });
+    await execFileAsync(
+      WHISPER_BIN,
+      [
+        '-m',
+        MODEL_PATH,
+        '-f',
+        filePath,
+        '-otxt',
+        '-of',
+        'out', // saves as out.txt
+        '-osrt', // suppress optional formats
+      ],
+      { cwd: workDir },
+    );
 
     const outputPath = join(workDir, 'out.txt');
     const outputText = await readFile(outputPath, 'utf8');

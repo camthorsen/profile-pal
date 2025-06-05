@@ -50,7 +50,9 @@ logs
 .DS_Store
 
 # Python
+.venv/
 __pycache__/
+models/
 
 # Testing
 coverage/
