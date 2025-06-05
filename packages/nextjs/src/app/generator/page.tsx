@@ -4,7 +4,11 @@
 import { useState, useRef, type ChangeEvent, type FormEvent } from 'react';
 import Image from 'next/image';
 import imageCompression from 'browser-image-compression';
-import { ReactMic } from 'react-mic';
+import dynamic from 'next/dynamic';
+
+const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
+  ssr: false,
+});
 
 interface ProfileResponse {
   tags: string[]; // e.g. ["cat", "short fur", …]

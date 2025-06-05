@@ -1,21 +1,32 @@
-//api/src/transcribe/transcribe.ts
-import os from 'node:os';
-import path from 'node:path';
+// packages/api/src/transcribe.ts
+import { execFile } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { promisify } from 'node:util';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 
-const MODEL = 'ggml-tiny.en.bin';
-const WHISPER_CPP_PATH = path.join(os.homedir(), 'repos', 'clones', 'whisper.cpp');
+const execFileAsync = promisify(execFile);
+
+const WHISPER_BIN = `${process.env.HOME}/repos/clones/whisper.cpp/build/bin/whisper-cli`;
+const MODEL_PATH = `${process.env.HOME}/repos/clones/whisper.cpp/models/ggml-tiny.en.bin`;
 
 export async function transcribe(filePath: string): Promise<string> {
-  const { execFile } = await import('node:child_process');
-  const { promisify } = await import('node:util');
-  const exec = promisify(execFile);
+  const workDir = await mkdtemp(join(tmpdir(), 'whisper-out-'));
 
-  const { stdout } = await exec(path.join(WHISPER_CPP_PATH, 'build/bin/whisper-cli'), [
-    '-m',
-    path.join(WHISPER_CPP_PATH, 'models', MODEL),
-    '-f',
-    filePath,
-    '-otxt',
-  ]);
-  return stdout.trim();
+  try {
+    await execFileAsync(WHISPER_BIN, [
+      '-m', MODEL_PATH,
+      '-f', filePath,
+      '-otxt',
+      '-of', 'out', // saves as out.txt
+      '-osrt',      // suppress optional formats
+    ], { cwd: workDir });
+
+    const outputPath = join(workDir, 'out.txt');
+    const outputText = await readFile(outputPath, 'utf8');
+    return outputText.trim();
+  } finally {
+    await rm(workDir, { recursive: true, force: true });
+  }
 }
