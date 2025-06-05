@@ -121,6 +121,9 @@ importers:
       '@types/react-dom':
         specifier: 19.1.6
         version: 19.1.6(@types/react@19.1.6)
+      '@types/react-mic':
+        specifier: 12.4.6
+        version: 12.4.6
       '@types/webpack':
         specifier: 5.28.5
         version: 5.28.5(esbuild@0.25.5)
@@ -1205,6 +1208,9 @@ packages:
     resolution: {integrity: sha512-4hOiT/dwO8Ko0gV1m/TJZYk3y0KBnY9vzDh7W+DH17b2HFSOGgdj33dhihPeuy3l0q23+4e+hoXHV6hCC4dCXw==}
     peerDependencies:
       '@types/react': ^19.0.0
+
+  '@types/react-mic@12.4.6':
+    resolution: {integrity: sha512-EBD7AOxgi037VX/osTtlv3pJ0Rlwc9SobtSkt4Yq+XO8Coq4LbQCM2zqjUppu5DMm6GY0fzwFwTjAkoO3XbPGA==}
 
   '@types/react@19.1.6':
     resolution: {integrity: sha512-JeG0rEWak0N6Itr6QUx+X60uQmN+5t3j9r/OVDtWzFXKaj6kD1BwJzOksD0FF6iWxZlbE1kB0q9vtnU2ekqa1Q==}
@@ -4486,6 +4492,10 @@ snapshots:
       undici-types: 6.21.0
 
   '@types/react-dom@19.1.6(@types/react@19.1.6)':
+    dependencies:
+      '@types/react': 19.1.6
+
+  '@types/react-mic@12.4.6':
     dependencies:
       '@types/react': 19.1.6
 
