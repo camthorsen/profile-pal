@@ -1,2 +1,2 @@
-export { transcribe } from './transcribe/transcribe.ts';
+export { transcribe } from './audio/transcribe.ts';
 export * from './types.js';

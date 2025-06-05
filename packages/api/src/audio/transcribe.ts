@@ -1,15 +1,15 @@
 // packages/api/src/transcribe.ts
 import { execFile } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
-import { mkdtemp, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
 
 const execFileAsync = promisify(execFile);
 
-const WHISPER_BIN = `${process.env.HOME}/repos/clones/whisper.cpp/build/bin/whisper-cli`;
-const MODEL_PATH = `${process.env.HOME}/repos/clones/whisper.cpp/models/ggml-tiny.en.bin`;
+const WHISPER_BIN = `${homedir()}/repos/clones/whisper.cpp/build/bin/whisper-cli`;
+const MODEL_PATH = `${homedir()}/repos/clones/whisper.cpp/models/ggml-tiny.en.bin`;
 
 export async function transcribe(filePath: string): Promise<string> {
   const workDir = await mkdtemp(join(tmpdir(), 'whisper-out-'));
