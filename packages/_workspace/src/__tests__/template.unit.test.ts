@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
 
-import { name } from '../../package.json';
+import packageJson from '../../package.json' with { type: 'json' };
 
 const thisFilePath = fileURLToPath(import.meta.url);
 const currentDirectory = path.dirname(thisFilePath);
@@ -17,7 +17,7 @@ if (workspaceName === '_workspace') {
 } else {
   describe('workspace is clone', () => {
     it('package name has been changed from the default', () => {
-      expect(name).not.toBe('workspace-template');
+      expect(packageJson.name).not.toBe('workspace-template');
     });
 
     it('workspace placeholder has been replaced in README', () => {
