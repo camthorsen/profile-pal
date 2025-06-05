@@ -5,41 +5,36 @@ set -euo pipefail
 REPO_DIR=~/repos/clones
 LLAMA_DIR="$REPO_DIR/llama.cpp"
 
+function download_model() {
+  local name="$1"
+  local url="$2"
+  local dir="$3"
+  local filename="$4"
 
-# region | Mistral model download
-echo "🔧 Downloading Mistral model..."
+  echo "🔧 Downloading ${name} model..."
+  mkdir -p "$dir"
 
-MISTRAL_URL="https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.1-GGUF"
-MISTRAL_MODEL_DIR="$LLAMA_DIR/models/mistral"
-MISTRAL_MODEL_NAME="mistral-7b-instruct-v0.1.Q4_K_M.gguf"
+  if [ ! -f "$dir/$filename" ]; then
+    echo "Downloading $filename..."
+    curl -L -o "$dir/$filename" "$url/resolve/main/$filename"
+  else
+    echo "Model $filename already exists."
+  fi
+}
 
-mkdir -p "$MISTRAL_MODEL_DIR"
+download_model "Mistral" \
+  "https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.1-GGUF" \
+  "$LLAMA_DIR/models/mistral" \
+  "mistral-7b-instruct-v0.1.Q4_K_M.gguf"
 
-if [ ! -f "$MISTRAL_MODEL_DIR/$MISTRAL_MODEL_NAME" ]; then
-  echo "Downloading $MISTRAL_MODEL_NAME..."
-  curl -L -o "$MISTRAL_MODEL_DIR/$MISTRAL_MODEL_NAME" \
-    "$MISTRAL_URL/resolve/main/$MISTRAL_MODEL_NAME"
-else
-  echo "Model $MISTRAL_MODEL_NAME already exists."
-fi
-# endregion | Mistral model download
+download_model "Tiny" \
+  "https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF" \
+  "$LLAMA_DIR/models/tiny" \
+  "tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf"
 
-# region | Zephyr model download
-ZEPHYR_URL="https://huggingface.co/TheBloke/zephyr-7B-beta-GGUF"
-ZEPHYR_MODEL_DIR="$LLAMA_DIR/models/zephyr"
-ZEPHYR_MODEL_NAME="zephyr-7b-beta.Q4_K_M.gguf"
-
-echo "🔧 Downloading Zephyr model..."
-mkdir -p "$ZEPHYR_MODEL_DIR"
-
-if [ ! -f "$ZEPHYR_MODEL_DIR/$ZEPHYR_MODEL_NAME" ]; then
-  echo "Downloading $ZEPHYR_MODEL_NAME..."
-  curl -L -o "$ZEPHYR_MODEL_DIR/$ZEPHYR_MODEL_NAME" \
-    "$ZEPHYR_URL/resolve/main/$ZEPHYR_MODEL_NAME"
-else
-  echo "Model $ZEPHYR_MODEL_NAME already exists."
-fi
-# endregion | Zephyr model download
+download_model "Zephyr" \
+  "https://huggingface.co/TheBloke/zephyr-7B-beta-GGUF" \
+  "$LLAMA_DIR/models/zephyr" \
+  "zephyr-7b-beta.Q4_K_M.gguf"
 
 echo "✅ Download complete."
-
