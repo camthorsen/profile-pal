@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "api"
+name = "pyapi"
 version = "0.1.0"
 description = "Whisper-tiny + CLIP + Mistral-7B-Instruct (CPU)"
 authors = ["Camilla Thorsen <camilla@thorsen.dev>"]
