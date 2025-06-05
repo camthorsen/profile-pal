@@ -1,6 +1,6 @@
 {
-  "name": "node-monorepo-nextjs-template",
-  "version": "1.2.6",
+  "name": "pet-profiler-nextjs",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {

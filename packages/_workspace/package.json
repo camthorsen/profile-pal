@@ -1,11 +1,11 @@
 {
   "name": "node-monorepo-workspace-template",
-  "version": "1.2.5",
+  "version": "0.1.0",
   "private": true,
   "description": "Template for new workspace",
   "keywords": [],
   "license": "UNLICENSED",
-  "author": "William Thorsen <william@thorsen.dev> (https://github.com/williamthorsen)",
+  "author": "Camilla Thorsen <camilla@thorsen.dev> (https://github.com/camthorsen)",
   "type": "module",
   "exports": {
     ".": {
