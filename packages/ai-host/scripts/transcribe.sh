@@ -26,6 +26,6 @@ if [[ ! -f "$file_path" ]]; then
 fi
 
 # Perform transcription
-curl -sSf -X POST http://localhost:8787/v1/audio/transcriptions \
+curl -sSf -X POST http://localhost:8787/audio/transcribe \
   -H "Content-Type: multipart/form-data" \
   -F "file=@${file_path}"

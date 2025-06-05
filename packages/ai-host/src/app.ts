@@ -1,3 +1,4 @@
+//ai-host/src/app.ts
 import { randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -15,7 +16,7 @@ app.get('/health', (context) => {
   return context.text('ok');
 });
 
-app.post('/v1/audio/transcriptions', async (context) => {
+app.post('/audio/transcribe', async (context) => {
   const body = await context.req.parseBody();
   const file = body.file;
 

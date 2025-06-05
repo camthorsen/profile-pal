@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     // 2) Send audio to local Python service (/transcribe)
     const transcribeForm = new FormData();
     transcribeForm.append('audio_file', audioFileWeb);
-    const transcribeResp = await fetch('http://localhost:8000/transcribe', {
+    const transcribeResp = await fetch('http://localhost:8787/audio/transcribe', {
       method: 'POST',
       body: transcribeForm,
     });
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     // 3) Send image to local Python service (/clip_tags)
     const tagsForm = new FormData();
     tagsForm.append('image_file', imageFileWeb);
-    const tagsResp = await fetch('http://localhost:8000/clip_tags', {
+    const tagsResp = await fetch('http://localhost:8787/clip_tags', {
       method: 'POST',
       body: tagsForm,
     });
