@@ -9,7 +9,7 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js"
+      "import": "./dist/esm/index.js"
     }
   },
   "files": [
