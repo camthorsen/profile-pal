@@ -13,10 +13,12 @@
     }
   },
   "scripts": {
+    "dev": "tsx watch src/main.ts",
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts"
   },
   "dependencies": {
     "@hono/node-server": "1.14.3",
-    "hono": "4.7.11"
+    "hono": "4.7.11",
+    "pet-profiler-api": "workspace:*"
   }
 }
