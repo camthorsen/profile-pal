@@ -104,7 +104,7 @@ export default function GeneratorPage(): ReactElement {
 
     try {
       // Use the Fetch API to POST to /api/process-profile
-      const resp = await fetch('/api/process-profile', {
+      const resp = await fetch('http://localhost:8787/api/process-profile', {
         method: 'POST',
         body: formData,
       });
@@ -114,6 +114,7 @@ export default function GeneratorPage(): ReactElement {
       }
 
       const data: ProfileResponse = await resp.json();
+      console.log('data', data);
       setResponseData(data);
     } catch (error) {
       console.error('Error calling /api/process-profile:', error);

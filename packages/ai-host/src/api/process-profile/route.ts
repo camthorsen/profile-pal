@@ -1,6 +1,5 @@
 import { Hono } from 'hono';
-import { getImageTags } from 'packages/api/src/image/getClipOutput.js';
-import { transcribeAudio } from 'pet-profiler-api/audio/transcribe';
+import { getClipScoresFromImage, transcribeAudio } from 'pet-profiler-api';
 
 import { streamToTempFile } from '../../lib/stream-to-tempfile.ts';
 
@@ -26,10 +25,10 @@ app.post(async (c) => {
       streamToTempFile(audioFile.stream(), '.webm'),
     ]);
 
-    const [tags, summary] = await Promise.all([getImageTags(imagePath), transcribeAudio(audioPath)]);
+    const [tags, summary] = await Promise.all([getClipScoresFromImage(imagePath), transcribeAudio(audioPath)]);
 
     return c.json({
-      tags: [tags.type],
+      tags: tags.map(({ label }) => label),
       summary, // You can swap this out for `generateSummary(tags, transcript)` if ready
     });
   } catch (err) {

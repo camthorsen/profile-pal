@@ -1,15 +1,13 @@
 import { getBestTag } from './getBestTag.ts';
-import { getClipOutput } from './getClipOutput.ts';
-import { type ClipScore,parseClipScores } from './parseClipScores.ts';
+import { type ClipScore, getClipScoresFromImage } from './getClipScoresFromImage.ts';
 
 export async function getBestTagFromImage(filepath: string): Promise<ClipScore> {
-  const rawClipOutput = await getClipOutput(filepath);
-  const clipScores = parseClipScores(rawClipOutput);
+  const clipScores = await getClipScoresFromImage(filepath);
 
   if (clipScores.length === 0) {
-   throw new Error('No similarity scores found');
+    throw new Error('No similarity scores found');
   }
 
-  const bestTag =  getBestTag(clipScores);
-  return  bestTag;
+  const bestTag = getBestTag(clipScores);
+  return bestTag;
 }
