@@ -29,7 +29,7 @@ app.post(async (c) => {
     const [tags, summary] = await Promise.all([getImageTags(imagePath), transcribeAudio(audioPath)]);
 
     return c.json({
-      tags: [tags.type, tags.coat, tags.breed],
+      tags: [tags.type],
       summary, // You can swap this out for `generateSummary(tags, transcript)` if ready
     });
   } catch (err) {

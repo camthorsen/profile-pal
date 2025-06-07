@@ -43,7 +43,8 @@ best_label=""
 best_score="-1000"
 
 for label in "${type_labels[@]}"; do
-  output=$("$CLIP_BIN" --image "$image_path" --text "$label" -m "$MODEL_PATH")
+  # FIXME: Hardcoded labels
+  output=$("$CLIP_BIN" --image "$image_path" --text "cat" --text "dog" --text "rabbit" --text "other" -m "$MODEL_PATH")
   score=$(echo "$output" | grep "Similarity score" | awk '{ print $NF }')
 
   comparison=$(echo "$score > $best_score" | bc -l | tr -d '\n')

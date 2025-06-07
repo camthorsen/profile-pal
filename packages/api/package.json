@@ -23,7 +23,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "prepare": "pnpm run ws build",
+    "prepare-disabled": "pnpm run ws build",
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts"
   },
   "dependencies": {},

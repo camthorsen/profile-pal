@@ -1,42 +1,35 @@
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve } from "node:path";
+import { execFile } from 'node:child_process';
+import { resolve } from 'node:path';
+import { parseClipOutput } from './parseClipOutput.ts';
+import { promisify } from 'node:util';
 
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const thisFilePath = fileURLToPath(import.meta.url);
+const thisDirPath = dirname(thisFilePath);
 const execFileAsync = promisify(execFile);
 
-// Path to your tag.sh script
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const SCRIPT_PATH = resolve(__dirname, "../../../api/scripts/clip/tag.sh");
+const SCRIPT_PATH = resolve(thisDirPath, '../../scripts/clip/tag.sh');
 
-/**
- * Runs the tag.sh script on a given image file and returns type, coat, and breed.
- */
-export async function getImageTags(imagePath: string): Promise<{
-  type: string;
-  coat: string;
-  breed: string;
-}> {
+export async function getImageTags(filePath: string): Promise<{ type: string }> {
   try {
-    const { stdout } = await execFileAsync(SCRIPT_PATH, [imagePath]);
-    const lines = stdout.trim().split("\n");
+    const { stdout } = await execFileAsync(SCRIPT_PATH, [filePath], {
+      timeout: 10_000, // ms
+      killSignal: 'SIGKILL',
+    });
 
-    // Extract the classification lines
-    const typeLine = lines.find((line) => line.startsWith("🔹 Type:"));
-    const coatLine = lines.find((line) => line.startsWith("🔹 Coat:"));
-    const breedLine = lines.find((line) => line.startsWith("🔹 Breed:"));
-
-    if (!typeLine || !coatLine || !breedLine) {
-      throw new Error("Unexpected tag.sh output format.");
+    console.log(stdout);
+    const scores = parseClipOutput(stdout);
+    if (scores.length === 0) {
+      throw new Error('No similarity scores found');
     }
 
-    return {
-      type: typeLine.replace("🔹 Type: ", "").trim(),
-      coat: coatLine.replace("🔹 Coat: ", "").trim(),
-      breed: breedLine.replace("🔹 Breed: ", "").trim(),
-    };
-  } catch (error: any) {
-    console.error("❌ Failed to classify image:", error.message);
-    throw new Error(`CLIP tag error: ${error.message}`);
+    const best = scores.reduce((a, b) => (b.score > a.score ? b : a), scores[0]);
+
+    return { type: best?.label ?? 'no best label found' };
+  } catch (err) {
+    console.error('❌ CLIP image tag error:', err);
+    throw new Error('CLIP tag error: ' + err);
   }
 }
