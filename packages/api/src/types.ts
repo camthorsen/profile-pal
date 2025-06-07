@@ -1,1 +1,1 @@
-export type _placeholderForNoTypes = never;
+export type { ClipScore } from './image/getClipScoresFromImage.ts';

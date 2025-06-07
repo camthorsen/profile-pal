@@ -1,8 +1,11 @@
+/* eslint no-alert: off */
+
 'use client'; // ← This file uses React hooks, so it must run in the browser
 
 import imageCompression from 'browser-image-compression';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
+import type { ClipScore } from 'pet-profiler-api';
 import { type ChangeEvent, type FormEvent, type ReactElement, useRef, useState } from 'react';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
@@ -10,19 +13,20 @@ const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), 
 });
 
 interface ProfileResponse {
-  tags: string[]; // e.g. ["cat", "short fur", …]
+  clipScores: ClipScore[];
+  bestTag: string; // e.g. ["cat", "short fur", …]
   summary: string; // 1–2 paragraphs of descriptive text
 }
 
 export default function GeneratorPage(): ReactElement {
   // —— State for image upload/compression —— //
-  const [rawImageFile, setRawImageFile] = useState<File | null>(null);
-  const [compressedImage, setCompressedImage] = useState<File | null>(null);
+  const [rawImageFile, setRawImageFile] = useState<File | undefined>();
+  const [compressedImage, setCompressedImage] = useState<File | undefined>();
 
   // —— State for audio upload or recording —— //
-  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [audioFile, setAudioFile] = useState<File | undefined>();
   const [isRecording, setIsRecording] = useState(false);
-  const [recordingBlob, setRecordingBlob] = useState<Blob | null>(null);
+  const [_recordingBlob, setRecordingBlob] = useState<Blob | undefined>();
 
   // —— State for server response —— //
   const [responseData, setResponseData] = useState<ProfileResponse | null>(null);
@@ -33,9 +37,14 @@ export default function GeneratorPage(): ReactElement {
   /**
    * 1) Handle image selection from disk and compress it client‐side.
    */
-  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>): Promise<void> => {
+  async function handleImageChange(e: ChangeEvent<HTMLInputElement>): Promise<void> {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
+    if (!file) {
+      setRawImageFile(undefined);
+      return;
+    }
+
     setRawImageFile(file);
 
     try {
@@ -57,7 +66,7 @@ export default function GeneratorPage(): ReactElement {
       // If compression fails, fall back to the original file
       setCompressedImage(file);
     }
-  };
+  }
 
   /**
    * 2A) Handle when a user uploads an existing audio file from disk.
@@ -73,9 +82,10 @@ export default function GeneratorPage(): ReactElement {
   function toggleRecording() {
     setIsRecording((prev) => !prev);
   }
-  function onData(recordedChunk: Blob) {
+  function onData(_recordedChunk: Blob) {
     // We could process streaming chunks here; for MVP we just ignore intermediate data
   }
+
   function onStop(recordedData: { blob: Blob }) {
     // Once recording stops, we get a Blob. Wrap it in a File so we can attach to FormData
     setRecordingBlob(recordedData.blob);
@@ -113,9 +123,10 @@ export default function GeneratorPage(): ReactElement {
         throw new Error(`Server responded with ${resp.status}`);
       }
 
-      const data: ProfileResponse = await resp.json();
-      console.log('data', data);
-      setResponseData(data);
+      // FIXME: Validate response.
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const profileResponse: ProfileResponse = await resp.json();
+      setResponseData(profileResponse);
     } catch (error) {
       console.error('Error calling /api/process-profile:', error);
       alert('Something went wrong generating the profile. Check console for details.');
@@ -199,9 +210,15 @@ export default function GeneratorPage(): ReactElement {
       {responseData && (
         <div className="mt-6 border-t pt-4 space-y-4">
           <h2 className="text-xl font-semibold">Generated Tags:</h2>
+          <p>
+            Best tag: <span className="font-bold">{responseData.bestTag}</span>
+          </p>
+          <p>Raw scores:</p>
           <ul className="list-disc list-inside">
-            {responseData.tags.map((tag, i) => (
-              <li key={i}>{tag}</li>
+            {responseData.clipScores.map(({ label, score }) => (
+              <li key={label}>
+                {label} ({score})
+              </li>
             ))}
           </ul>
           <h2 className="text-xl font-semibold">Profile Summary:</h2>

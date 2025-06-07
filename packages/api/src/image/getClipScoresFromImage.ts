@@ -18,7 +18,17 @@ export async function getClipScoresFromImage(filePath: string): Promise<ClipScor
     throw new Error(`Request failed: ${response.status} ${response.statusText}\n${text}`);
   }
 
-  return response.json() as Promise<ClipScore[]>;
+  // @ts-expect-error - Need to use Zod to validate
+  return response.json();
+}
+
+export function getBestClipScore(tags: ClipScore[]): ClipScore {
+  if (tags.length === 0) {
+    return { label: 'unknown', score: 0 };
+  }
+
+  // Sort by score in descending order and return the label of the highest score
+  return tags.reduce((best, current) => (current.score > best.score ? current : best));
 }
 
 export interface ClipScore {

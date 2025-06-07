@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { getBestTagFromImage } from 'pet-profiler-api';
+import { getClipScoresFromImage } from 'pet-profiler-api';
 
 import { streamToTempFile } from '../../../lib/stream-to-tempfile.ts';
 
@@ -21,8 +21,8 @@ app.post(async (c) => {
   const imagePath = await streamToTempFile(imageFile.stream(), '.jpg');
 
   try {
-    const tags = await getBestTagFromImage(imagePath);
-    return c.json(tags);
+    const clipScores = await getClipScoresFromImage(imagePath);
+    return c.json(clipScores);
   } catch (error: unknown) {
     console.error('❌ CLIP image tag error:', error);
     return c.text('Failed to tag image', 500);

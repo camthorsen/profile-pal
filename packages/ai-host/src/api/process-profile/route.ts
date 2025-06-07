@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { getClipScoresFromImage, transcribeAudio } from 'pet-profiler-api';
+import { type ClipScore, getBestClipScore, getClipScoresFromImage, transcribeAudio } from 'pet-profiler-api';
 
 import { streamToTempFile } from '../../lib/stream-to-tempfile.ts';
 
@@ -25,14 +25,18 @@ app.post(async (c) => {
       streamToTempFile(audioFile.stream(), '.webm'),
     ]);
 
-    const [tags, summary] = await Promise.all([getClipScoresFromImage(imagePath), transcribeAudio(audioPath)]);
+    const [clipScores, summary]: [clipScores: ClipScore[], summary: string] = await Promise.all([
+      getClipScoresFromImage(imagePath),
+      transcribeAudio(audioPath),
+    ]);
 
     return c.json({
-      tags: tags.map(({ label }) => label),
+      clipScores: clipScores,
+      bestTag: getBestClipScore(clipScores).label,
       summary, // You can swap this out for `generateSummary(tags, transcript)` if ready
     });
-  } catch (err) {
-    console.error('❌ Failed to process profile:', err);
+  } catch (error: unknown) {
+    console.error('❌ Failed to process profile:', error);
     return c.text('Internal server error', 500);
   }
 });

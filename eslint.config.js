@@ -30,6 +30,7 @@ export default [
       'n/no-extraneous-import': 'off',
       'n/no-missing-import': 'off',
       'n/no-unpublished-import': 'off',
+      'unicorn/catch-error-name': 'warn',
       'unicorn/no-array-reduce': 'off',
     },
   },
