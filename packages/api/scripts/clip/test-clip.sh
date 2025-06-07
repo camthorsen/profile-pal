@@ -8,5 +8,4 @@ set -euo pipefail
 $HOME/repos/clones/clip.cpp/build/bin/main \
   -m $HOME/repos/clones/clip.cpp/models/clip-vit-base-patch32.gguf \
   --image ~/Downloads/cat.jpg \
-  --text "cat" --text "dog" --text "rabbit" --text "other" \
-  --verbose 2
+  --text "cat" --text "dog" --text "rabbit" --text "other"
