@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { getImageTags } from 'pet-profiler-api/image/tag';
+import { getImageTags } from 'packages/api/src/image/getClipOutput.js';
 import { transcribeAudio } from 'pet-profiler-api/audio/transcribe';
 
 import { streamToTempFile } from '../../lib/stream-to-tempfile.ts';
