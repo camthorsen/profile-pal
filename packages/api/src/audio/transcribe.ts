@@ -11,7 +11,7 @@ const execFileAsync = promisify(execFile);
 const WHISPER_BIN = `${homedir()}/repos/clones/whisper.cpp/build/bin/whisper-cli`;
 const MODEL_PATH = `${homedir()}/repos/clones/whisper.cpp/models/ggml-tiny.en.bin`;
 
-export async function transcribe(filePath: string): Promise<string> {
+export async function transcribeAudio(filePath: string): Promise<string> {
   const workDir = await mkdtemp(join(tmpdir(), 'whisper-out-'));
 
   try {

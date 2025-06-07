@@ -9,7 +9,13 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js"
+      "import": "./src/index.ts"
+    },
+    "./audio/transcribe": {
+      "import": "./src/audio/transcribe.ts"
+    },
+    "./image/tag": {
+      "import": "./src/image/tag.ts"
     }
   },
   "files": [

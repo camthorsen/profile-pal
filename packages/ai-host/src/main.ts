@@ -1,6 +1,6 @@
 import { serve } from '@hono/node-server';
 
-import app from './app.ts';
+import { app } from './app.ts';
 
 const port = process.env.PORT ? Number(process.env.PORT) : 8787;
 

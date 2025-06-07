@@ -1,10 +1,12 @@
 import { execFile } from "node:child_process";
-import { resolve } from "node:path";
 import { promisify } from "node:util";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 
 const execFileAsync = promisify(execFile);
 
 // Path to your tag.sh script
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const SCRIPT_PATH = resolve(__dirname, "../../../scripts/clip/tag.sh");
 
 /**
