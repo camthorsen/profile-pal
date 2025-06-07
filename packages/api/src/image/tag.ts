@@ -7,7 +7,7 @@ const execFileAsync = promisify(execFile);
 
 // Path to your tag.sh script
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const SCRIPT_PATH = resolve(__dirname, "../../../scripts/clip/tag.sh");
+const SCRIPT_PATH = resolve(__dirname, "../../../api/scripts/clip/tag.sh");
 
 /**
  * Runs the tag.sh script on a given image file and returns type, coat, and breed.

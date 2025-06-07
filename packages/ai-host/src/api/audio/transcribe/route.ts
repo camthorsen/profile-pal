@@ -2,7 +2,7 @@
 
 import { Hono } from 'hono';
 import { transcribeAudio } from 'pet-profiler-api/audio/transcribe';
-import { streamToTempFile } from '../../../lib/stream-to-tempfile';
+import { streamToTempFile } from '../../../lib/stream-to-tempfile.ts';
 
 const app = new Hono();
 

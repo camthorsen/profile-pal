@@ -25,8 +25,8 @@ if [[ ! -f "$image_path" ]]; then
   exit 2
 fi
 
-CLIP_BIN=~/repos/clones/clip.cpp/build/bin/clip-classify
-MODEL_PATH=~/repos/clones/clip.cpp/models/clip-vit-base-patch32.gguf
+CLIP_BIN="$HOME/repos/clones/clip.cpp/build/bin/main"
+MODEL_PATH="$HOME/repos/clones/clip.cpp/models/clip-vit-base-patch32.gguf"
 
 # Check if binary and model exist
 if [[ ! -x "$CLIP_BIN" ]]; then

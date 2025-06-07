@@ -12,11 +12,22 @@ export async function streamToTempFile(stream: ReadableStream<Uint8Array>, ext =
 
 async function streamToArrayBuffer(stream: ReadableStream<Uint8Array>): Promise<ArrayBuffer> {
   const reader = stream.getReader();
-  const chunks = [];
+  const chunks: Uint8Array[] = [];
+
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-    if (value) chunks.push(...value);
+    if (value) chunks.push(value);
   }
-  return new Uint8Array(chunks).buffer;
+
+  const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+  const merged = new Uint8Array(totalLength);
+  let offset = 0;
+
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.length;
+  }
+
+  return merged.buffer;
 }
