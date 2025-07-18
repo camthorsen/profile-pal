@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import type { ClipScore } from 'pet-profiler-api';
 import { type ChangeEvent, type FormEvent, type ReactElement, useRef, useState } from 'react';
+import { Header } from '@/components/Header.tsx';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
   ssr: false,
@@ -134,101 +135,104 @@ export default function GeneratorPage(): ReactElement {
   }
 
   return (
-    <div className="max-w-xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Animal Adoption Profile Demo</h1>
+    <div className="flex flex-col">
+      <Header />
+      <div className="max-w-xl mx-auto p-6 space-y-6">
+        <h1 className="text-2xl font-bold">Animal Adoption Profile Demo</h1>
 
-      {/* —— IMAGE UPLOAD + PREVIEW —— */}
-      <div>
-        <label className="block font-medium mb-1">1. Upload an image of the animal:</label>
-        <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageChange} />
-        {rawImageFile && (
-          <div className="mt-2">
-            <p>
-              Original: {rawImageFile.name} ({(rawImageFile.size / 1024).toFixed(1)} KB)
-            </p>
-          </div>
-        )}
-        {compressedImage && (
-          <div className="mt-2">
-            <p>Compressed size: {(compressedImage.size / 1024).toFixed(1)} KB</p>
-            <Image
-              src={URL.createObjectURL(compressedImage)}
-              alt="Compressed preview"
-              width={200}
-              height={200}
-              className="object-contain rounded-md border"
-            />
-          </div>
-        )}
-      </div>
-
-      {/* —— AUDIO UPLOAD OR RECORD —— */}
-      <div>
-        <label className="block font-medium mb-1">2. Provide audio describing the animal:</label>
-        <div className="space-y-4">
-          {/* 2A: Upload existing audio */}
-          <div>
-            <input type="file" accept="audio/*" onChange={handleAudioUploadChange} />
-            {audioFile && (
-              <p className="mt-1 text-sm text-gray-600">
-                Selected audio: {audioFile.name} ({(audioFile.size / 1024).toFixed(1)} KB)
-              </p>
-            )}
-          </div>
-
-          {/* 2B: Record in-browser */}
-          <div>
-            <button
-              onClick={toggleRecording}
-              className={`px-4 py-2 rounded ${isRecording ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}
-            >
-              {isRecording ? 'Stop Recording' : 'Start Recording'}
-            </button>
+        {/* —— IMAGE UPLOAD + PREVIEW —— */}
+        <div>
+          <label className="block font-medium mb-1">1. Upload an image of the animal:</label>
+          <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageChange} />
+          {rawImageFile && (
             <div className="mt-2">
-              <ReactMic
-                record={isRecording}
-                className="w-full"
-                onStop={onStop}
-                onData={onData}
-                mimeType="audio/webm" // record as WebM (reasonable bitrate)
-                strokeColor="#4CAF50"
-                backgroundColor="#f0f0f0"
+              <p>
+                Original: {rawImageFile.name} ({(rawImageFile.size / 1024).toFixed(1)} KB)
+              </p>
+            </div>
+          )}
+          {compressedImage && (
+            <div className="mt-2">
+              <p>Compressed size: {(compressedImage.size / 1024).toFixed(1)} KB</p>
+              <Image
+                src={URL.createObjectURL(compressedImage)}
+                alt="Compressed preview"
+                width={200}
+                height={200}
+                className="object-contain rounded-md border"
               />
+            </div>
+          )}
+        </div>
+
+        {/* —— AUDIO UPLOAD OR RECORD —— */}
+        <div>
+          <label className="block font-medium mb-1">2. Provide audio describing the animal:</label>
+          <div className="space-y-4">
+            {/* 2A: Upload existing audio */}
+            <div>
+              <input type="file" accept="audio/*" onChange={handleAudioUploadChange} />
+              {audioFile && (
+                <p className="mt-1 text-sm text-gray-600">
+                  Selected audio: {audioFile.name} ({(audioFile.size / 1024).toFixed(1)} KB)
+                </p>
+              )}
+            </div>
+
+            {/* 2B: Record in-browser */}
+            <div>
+              <button
+                onClick={toggleRecording}
+                className={`px-4 py-2 rounded ${isRecording ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}
+              >
+                {isRecording ? 'Stop Recording' : 'Start Recording'}
+              </button>
+              <div className="mt-2">
+                <ReactMic
+                  record={isRecording}
+                  className="w-full"
+                  onStop={onStop}
+                  onData={onData}
+                  mimeType="audio/webm" // record as WebM (reasonable bitrate)
+                  strokeColor="#4CAF50"
+                  backgroundColor="#f0f0f0"
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* —— SUBMIT BUTTON —— */}
-      <div>
-        <button onClick={handleSubmit} className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-          Generate Profile
-        </button>
-      </div>
-
-      {/* —— DISPLAY RESULTS —— */}
-      {responseData && (
-        <div className="mt-6 border-t pt-4 space-y-4">
-          <h2 className="text-xl font-semibold">Generated Tags:</h2>
-          <p>
-            Best tag: <span className="font-bold">{responseData.bestTag}</span>
-          </p>
-          <p>Raw scores:</p>
-          <ul className="list-disc list-inside">
-            {responseData.clipScores.map(({ label, score }) => (
-              <li key={label}>
-                {label} ({score})
-              </li>
-            ))}
-          </ul>
-          <h2 className="text-xl font-semibold">Profile Summary:</h2>
-          <div className="prose max-w-none">
-            {responseData.summary.split('\n\n').map((para, idx) => (
-              <p key={idx}>{para}</p>
-            ))}
-          </div>
+        {/* —— SUBMIT BUTTON —— */}
+        <div>
+          <button onClick={handleSubmit} className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Generate Profile
+          </button>
         </div>
-      )}
+
+        {/* —— DISPLAY RESULTS —— */}
+        {responseData && (
+          <div className="mt-6 border-t pt-4 space-y-4">
+            <h2 className="text-xl font-semibold">Generated Tags:</h2>
+            <p>
+              Best tag: <span className="font-bold">{responseData.bestTag}</span>
+            </p>
+            <p>Raw scores:</p>
+            <ul className="list-disc list-inside">
+              {responseData.clipScores.map(({ label, score }) => (
+                <li key={label}>
+                  {label} ({score})
+                </li>
+              ))}
+            </ul>
+            <h2 className="text-xl font-semibold">Profile Summary:</h2>
+            <div className="prose max-w-none">
+              {responseData.summary.split('\n\n').map((para, idx) => (
+                <p key={idx}>{para}</p>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
