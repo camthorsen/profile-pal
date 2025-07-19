@@ -16,6 +16,7 @@ const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), 
 interface ProfileResponse {
   clipScores: ClipScore[];
   bestTag: string; // e.g. ["cat", "short fur", …]
+  transcript: string; // The transcribed audio text
   summary: string; // 1–2 paragraphs of descriptive text
 }
 
@@ -224,6 +225,12 @@ export default function GeneratorPage(): ReactElement {
                 </li>
               ))}
             </ul>
+            
+            <h2 className="text-xl font-semibold">Transcribed Audio:</h2>
+            <div className="bg-gray-50 p-4 rounded-lg border">
+              <p className="text-gray-700 italic">"{responseData.transcript}"</p>
+            </div>
+            
             <h2 className="text-xl font-semibold">Profile Summary:</h2>
             <div className="prose max-w-none">
               {responseData.summary.split('\n\n').map((para, idx) => (

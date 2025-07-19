@@ -1,8 +1,6 @@
 // packages/ai-host/src/api/audio/transcribe/route.ts
 
 import { Hono } from 'hono';
-import { transcribeAudio } from 'pet-profiler-api/audio/transcribe';
-import { streamToTempFile } from '../../../lib/stream-to-tempfile.ts';
 
 const app = new Hono();
 
@@ -19,11 +17,22 @@ app.post(async (c) => {
     return c.text('Audio file missing', 400);
   }
 
-  const audioPath = await streamToTempFile(audioFile.stream(), '.webm');
-
   try {
-    const transcript = await transcribeAudio(audioPath);
-    return c.json({ transcript });
+    // Forward the request to the Docker Whisper service
+    const whisperFormData = new FormData();
+    whisperFormData.append('audio', audioFile);
+
+    const response = await fetch('http://localhost:7861/audio/transcribe', {
+      method: 'POST',
+      body: whisperFormData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Whisper service responded with ${response.status}: ${response.statusText}`);
+    }
+
+    const result = await response.json() as { transcript: string };
+    return c.json({ transcript: result.transcript });
   } catch (err) {
     console.error('❌ Whisper transcription failed:', err);
     return c.text('Internal error running Whisper', 500);
