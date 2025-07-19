@@ -73,6 +73,12 @@ importers:
       '@hono/node-server':
         specifier: 1.14.3
         version: 1.14.3(hono@4.7.11)
+      '@williamthorsen/toolbelt.guards':
+        specifier: 3.0.1
+        version: 3.0.1
+      '@williamthorsen/toolbelt.objects':
+        specifier: 3.0.2
+        version: 3.0.2
       hono:
         specifier: 4.7.11
         version: 4.7.11
@@ -1381,6 +1387,10 @@ packages:
     hasBin: true
     peerDependencies:
       eslint: '>=9'
+
+  '@williamthorsen/toolbelt.guards@3.0.1':
+    resolution: {integrity: sha512-R74ASSwLtRc6QISg0gH2CxRisOh0VYrIL8Vj+nKO/Q2iNeOVtjrV7KwEiiCaHNnlSmO+i4/NrdAUztkEdpgc8w==, tarball: https://npm.pkg.github.com/download/@williamthorsen/toolbelt.guards/3.0.1/b5cdd46311deb6231489b80d93f15dcc8fc2da04}
+    engines: {node: '>=18.17.0'}
 
   '@williamthorsen/toolbelt.objects@3.0.2':
     resolution: {integrity: sha512-DHOjZcgnlLSg3UBz3HYmxjwrlmrGQQQe5hxirdcfsNozFDKkfvqwOsOX/Ue3G+9GMScMHfciWPXFGbbjQeA0aw==, tarball: https://npm.pkg.github.com/download/@williamthorsen/toolbelt.objects/3.0.2/468b63d1eab7efbb400119f4a586b4c18c2da7cb}
@@ -4823,6 +4833,8 @@ snapshots:
     dependencies:
       eslint: 9.28.0(jiti@2.4.2)
       tsx: 4.19.4
+
+  '@williamthorsen/toolbelt.guards@3.0.1': {}
 
   '@williamthorsen/toolbelt.objects@3.0.2': {}
 
