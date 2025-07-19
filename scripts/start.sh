@@ -1,22 +1,33 @@
 #!/usr/bin/env zsh
 source "$(dirname "$0")/config.sh"
 
-# Start ai-host if not running (assume port $AI_HOST_PORT)
-if ! lsof -i:"$AI_HOST_PORT" > /dev/null; then
-  pnpm run --filter ./packages/ai-host dev &
-fi
+# Build the concurrently command array
+cmds=()
+names=()
+colors=(blue magenta green yellow cyan)
+color_index=0
 
-# Start Next.js if not running (assume port $NEXTJS_PORT)
-if ! lsof -i:"$NEXTJS_PORT" > /dev/null; then
-  pnpm run --filter ./packages/nextjs dev &
-fi
+# ai-host
+cmds+=("pnpm run --filter ./packages/ai-host dev")
+names+=("ai-host")
+# nextjs
+cmds+=("pnpm run --filter ./packages/nextjs dev")
+names+=("nextjs")
 
-# Start Docker Compose services in detached mode if not running
+# Docker Compose services
 for service in "${DOCKER_SERVICES[@]}"; do
   compose_file="./packages/$service/docker-compose.yaml"
-  if ! docker compose --file "$compose_file" ps | grep -q "Up"; then
-    docker compose --file "$compose_file" up --detach
-  fi
+  cmds+=("docker compose --file '$compose_file' up")
+  names+=("$service")
+  color_index=$((color_index+1))
 done
 
-wait
+# Join names and colors for concurrently
+name_str=$(IFS=,; echo "${names[*]}")
+color_str=$(IFS=,; echo "${colors[*]}")
+
+# Run all commands in parallel with concurrently
+pnpm exec concurrently \
+  --names "$name_str" \
+  --prefix-colors "$color_str" \
+  "${cmds[@]}"
