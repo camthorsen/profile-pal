@@ -1,0 +1,8 @@
+version: "3.9"
+
+services:
+  whisper-service:
+    build: .
+    ports:
+      - "7861:7861"
+    restart: unless-stopped
