@@ -7,7 +7,9 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import type { ClipScore } from 'pet-profiler-api';
 import { type ChangeEvent, type FormEvent, type ReactElement, useRef, useState } from 'react';
+
 import { Header } from '@/components/Header.tsx';
+import { cn } from '@/utils/cn.ts';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
   ssr: false,
@@ -27,6 +29,7 @@ export default function GeneratorPage(): ReactElement {
 
   // —— State for audio upload or recording —— //
   const [audioFile, setAudioFile] = useState<File | undefined>();
+  const [isGenerating, setIsGenerating] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [_recordingBlob, setRecordingBlob] = useState<Blob | undefined>();
 
@@ -74,8 +77,11 @@ export default function GeneratorPage(): ReactElement {
    * 2A) Handle when a user uploads an existing audio file from disk.
    */
   function handleAudioUploadChange(e: ChangeEvent<HTMLInputElement>): void {
-    if (!e.target.files || e.target.files.length === 0) return;
-    setAudioFile(e.target.files[0]);
+    if (e.target.files && e.target.files.length > 0) {
+      setAudioFile(e.target.files[0]);
+    } else {
+      setAudioFile(undefined);
+    }
   }
 
   /**
@@ -104,8 +110,12 @@ export default function GeneratorPage(): ReactElement {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
+    setIsGenerating(true);
+    setResponseData(null);
+
     if (!compressedImage || !audioFile) {
       alert('Please provide both an image and an audio clip before submitting.');
+      setIsGenerating(false);
       return;
     }
 
@@ -133,7 +143,10 @@ export default function GeneratorPage(): ReactElement {
       console.error('Error calling /api/process-profile:', error);
       alert('Something went wrong generating the profile. Check console for details.');
     }
+    setIsGenerating(false);
   }
+
+  const canGenerate = !!(compressedImage && audioFile);
 
   return (
     <div className="flex flex-col">
@@ -144,7 +157,13 @@ export default function GeneratorPage(): ReactElement {
         {/* —— IMAGE UPLOAD + PREVIEW —— */}
         <div>
           <label className="block font-medium mb-1">1. Upload an image of the animal:</label>
-          <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageChange} />
+          <input
+            accept="image/*"
+            className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer"
+            type="file"
+            ref={fileInputRef}
+            onChange={handleImageChange}
+          />
           {rawImageFile && (
             <div className="mt-2">
               <p>
@@ -172,7 +191,12 @@ export default function GeneratorPage(): ReactElement {
           <div className="space-y-4">
             {/* 2A: Upload existing audio */}
             <div>
-              <input type="file" accept="audio/*" onChange={handleAudioUploadChange} />
+              <input
+                accept="audio/*"
+                className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer"
+                type="file"
+                onChange={handleAudioUploadChange}
+              />
               {audioFile && (
                 <p className="mt-1 text-sm text-gray-600">
                   Selected audio: {audioFile.name} ({(audioFile.size / 1024).toFixed(1)} KB)
@@ -184,9 +208,13 @@ export default function GeneratorPage(): ReactElement {
             <div>
               <button
                 onClick={toggleRecording}
-                className={`px-4 py-2 rounded ${isRecording ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}
+                className={cn(
+                  'px-4 py-2 rounded',
+                  isRecording ? 'bg-red-500 text-white' : 'bg-green-500 text-white hover:bg-green-600',
+                  'hover:cursor-pointer',
+                )}
               >
-                {isRecording ? 'Stop Recording' : 'Start Recording'}
+                {isRecording ? 'Stop recording' : 'Start recording'}
               </button>
               <div className="mt-2">
                 <ReactMic
@@ -205,10 +233,22 @@ export default function GeneratorPage(): ReactElement {
 
         {/* —— SUBMIT BUTTON —— */}
         <div>
-          <button onClick={handleSubmit} className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-            Generate Profile
+          <button
+            disabled={!canGenerate}
+            onClick={handleSubmit}
+            className={cn(
+              'px-6 py-2 rounded',
+              'bg-gray-200',
+              !canGenerate,
+              canGenerate && 'bg-blue-600 text-white ',
+              canGenerate && !isGenerating && 'hover:bg-blue-700 hover:cursor-pointer',
+            )}
+          >
+            {isGenerating ? 'Generating...' : 'Generate profile'}
           </button>
         </div>
+
+        {isGenerating && <div className="mt-6 border-t pt-4 space-y-4">Generating profile ...</div>}
 
         {/* —— DISPLAY RESULTS —— */}
         {responseData && (
@@ -225,12 +265,12 @@ export default function GeneratorPage(): ReactElement {
                 </li>
               ))}
             </ul>
-            
+
             <h2 className="text-xl font-semibold">Transcribed Audio:</h2>
             <div className="bg-gray-50 p-4 rounded-lg border">
               <p className="text-gray-700 italic">"{responseData.transcript}"</p>
             </div>
-            
+
             <h2 className="text-xl font-semibold">Profile Summary:</h2>
             <div className="prose max-w-none">
               {responseData.summary.split('\n\n').map((para, idx) => (
