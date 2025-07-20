@@ -52,7 +52,7 @@ models: Dict[str, Llama] = {}
 async def load_models():
     """Load all configured models on startup"""
     logger.info("Loading LLM models...")
-    
+
     for model_name, config in MODEL_CONFIGS.items():
         try:
             if os.path.exists(config["model_path"]):
@@ -68,7 +68,7 @@ async def load_models():
                 logger.warning(f"⚠️  Model file not found: {config['model_path']}")
         except Exception as e:
             logger.error(f"❌ Failed to load {model_name} model: {e}")
-    
+
     if not models:
         logger.error("❌ No models loaded successfully!")
     else:
@@ -95,24 +95,24 @@ async def list_models():
 @app.post("/generate", response_model=GenerateResponse)
 async def generate_text(request: GenerateRequest):
     """Generate text using the specified model"""
-    
+
     # Validate model
     if request.model not in models:
         available_models = list(models.keys())
         raise HTTPException(
-            status_code=400, 
+            status_code=400,
             detail=f"Model '{request.model}' not available. Available models: {available_models}"
         )
-    
+
     model = models[request.model]
-    
+
     try:
         # Build the prompt
         if request.system_prompt:
             full_prompt = f"<s>[INST] {request.system_prompt} [/INST] {request.prompt}"
         else:
             full_prompt = request.prompt
-        
+
         # Generate response
         response = model(
             full_prompt,
@@ -121,15 +121,15 @@ async def generate_text(request: GenerateRequest):
             top_p=request.top_p,
             stop=request.stop,
         )
-        
+
         generated_text = response["choices"][0]["text"].strip()
-        
+
         return GenerateResponse(
             text=generated_text,
             model=request.model,
             tokens_used=response.get("usage", {}).get("total_tokens")
         )
-        
+
     except Exception as e:
         logger.error(f"Error generating text with {request.model}: {e}")
         raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
@@ -137,34 +137,34 @@ async def generate_text(request: GenerateRequest):
 @app.post("/summarize")
 async def summarize_profile(request: GenerateRequest):
     """Specialized endpoint for generating pet adoption profiles"""
-    
+
     system_prompt = (
         "You are a helpful assistant that writes warm, "
         "professional third-person animal adoption profiles (≈2 paragraphs)."
     )
-    
+
     # Override the request with profile-specific settings
     profile_request = GenerateRequest(
         prompt=request.prompt,
         model=request.model,
-        max_tokens=220,
+        max_tokens=30,
         temperature=0.2,
         top_p=0.9,
         stop=["</s>", "[INST]"],
         system_prompt=system_prompt
     )
-    
+
     return await generate_text(profile_request)
 
 @app.post("/improve")
 async def improve_text(request: GenerateRequest):
     """Specialized endpoint for improving text quality"""
-    
+
     system_prompt = (
         "You are an expert editor. Rewrite the following text to read more naturally, "
         "with better grammar, spelling, and flow while preserving the original meaning."
     )
-    
+
     # Override the request with improvement-specific settings
     improve_request = GenerateRequest(
         prompt=request.prompt,
@@ -175,5 +175,5 @@ async def improve_text(request: GenerateRequest):
         stop=["</s>", "[INST]"],
         system_prompt=system_prompt
     )
-    
+
     return await generate_text(improve_request)
