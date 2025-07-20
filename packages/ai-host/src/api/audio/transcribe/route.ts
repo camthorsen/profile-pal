@@ -1,21 +1,23 @@
-// packages/ai-host/src/api/audio/transcribe/route.ts
-
+import { assert } from '@williamthorsen/toolbelt.guards';
+import { isObject } from '@williamthorsen/toolbelt.objects';
 import { Hono } from 'hono';
 
 const app = new Hono();
 
-app.post(async (c) => {
-  const contentType = c.req.header('content-type');
+app.post(async (context) => {
+  const contentType = context.req.header('content-type');
   if (!contentType?.startsWith('multipart/form-data')) {
-    return c.text('Expected multipart/form-data', 400);
+    return context.text('Expected multipart/form-data', 400);
   }
 
-  const formData = await c.req.formData();
+  const formData = await context.req.formData();
   const audioFile = formData.get('audio');
 
   if (!(audioFile instanceof File)) {
-    return c.text('Audio file missing', 400);
+    return context.text('Audio file missing', 400);
   }
+
+  console.info('Processing audio file', audioFile.name);
 
   try {
     // Forward the request to the Docker Whisper service
@@ -31,11 +33,12 @@ app.post(async (c) => {
       throw new Error(`Whisper service responded with ${response.status}: ${response.statusText}`);
     }
 
-    const result = await response.json() as { transcript: string };
-    return c.json({ transcript: result.transcript });
-  } catch (err) {
-    console.error('❌ Whisper transcription failed:', err);
-    return c.text('Internal error running Whisper', 500);
+    const result: unknown = await response.json();
+    assert(isObject(result));
+    return context.json({ transcript: result.transcript });
+  } catch (error: unknown) {
+    console.error('❌ Whisper transcription failed:', error);
+    return context.text('Internal error running Whisper', 500);
   }
 });
 
