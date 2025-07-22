@@ -1,8 +1,11 @@
 import { assert } from '@williamthorsen/toolbelt.guards';
 import { isObject } from '@williamthorsen/toolbelt.objects';
 
-export async function summarizeWithDockerLLM(transcript: string): Promise<string> {
+export async function summarizeWithDockerLLM(transcript: string, animalType: string): Promise<string> {
   try {
+    // Create a context-rich prompt that includes the animal type
+    const enhancedPrompt = `Animal type: ${animalType}\n\nDescription: ${transcript}`;
+    
     // Forward the request to the Docker LLM service
     const response = await fetch('http://localhost:7862/summarize', {
       method: 'POST',
@@ -10,7 +13,7 @@ export async function summarizeWithDockerLLM(transcript: string): Promise<string
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        prompt: transcript,
+        prompt: enhancedPrompt,
         model: 'tiny', // Use the tiny model for faster response
       }),
     });

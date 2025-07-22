@@ -30,12 +30,15 @@ app.post(async (context) => {
       transcribeWithDockerWhisper(audioFile),
     ]);
 
-    // Step 2: Generate summary using LLM
-    const summary = await summarizeWithDockerLLM(transcript);
+    // Step 2: Get the best tag (animal type) for context
+    const bestTag = getBestClipScore(clipScores).label;
+
+    // Step 3: Generate summary using LLM with animal type context
+    const summary = await summarizeWithDockerLLM(transcript, bestTag);
 
     return context.json({
       clipScores: clipScores,
-      bestTag: getBestClipScore(clipScores).label,
+      bestTag, // Use the bestTag variable we already computed
       transcript, // Add transcript to response
       summary, // Use LLM-generated summary
     });
