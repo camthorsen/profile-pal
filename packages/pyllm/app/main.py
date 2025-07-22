@@ -139,18 +139,19 @@ async def summarize_profile(request: GenerateRequest):
     """Specialized endpoint for generating pet adoption profiles"""
 
     system_prompt = (
-        "You are a helpful assistant that writes warm, "
-        "professional third-person animal adoption profiles (≈2 paragraphs)."
+        "You are a helpful assistant that writes warm, professional third-person animal adoption profiles. "
+        "Write 1-2 paragraphs that capture the animal's personality, appearance, and behavior. "
+        "Be concise but engaging. Focus on what makes this animal special and adoptable."
     )
 
     # Override the request with profile-specific settings
     profile_request = GenerateRequest(
         prompt=request.prompt,
         model=request.model,
-        max_tokens=30,
-        temperature=0.2,
+        max_tokens=200,  # Increased for better summaries
+        temperature=0.3,  # Slightly higher for more creative writing
         top_p=0.9,
-        stop=["</s>", "[INST]"],
+        stop=["</s>", "[INST]", "\n\n\n"],  # Stop on multiple newlines to prevent repetition
         system_prompt=system_prompt
     )
 
