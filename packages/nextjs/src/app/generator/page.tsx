@@ -22,6 +22,146 @@ interface ProfileResponse {
   summary: string; // 1–2 paragraphs of descriptive text
 }
 
+function ImageUploadSection({
+  rawImageFile,
+  compressedImage,
+  fileInputRef,
+  onImageChange,
+}: {
+  rawImageFile: File | undefined;
+  compressedImage: File | undefined;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+  onImageChange: (e: ChangeEvent<HTMLInputElement>) => Promise<void>;
+}): ReactElement {
+  return (
+    <div>
+      <label className="block font-medium mb-1">1. Upload an image of the animal:</label>
+      <input
+        accept="image/*"
+        className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer"
+        type="file"
+        ref={fileInputRef}
+        onChange={onImageChange}
+      />
+      {rawImageFile && (
+        <div className="mt-2">
+          <p>
+            Original: {rawImageFile.name} ({(rawImageFile.size / 1024).toFixed(1)} KB)
+          </p>
+        </div>
+      )}
+      {compressedImage && (
+        <div className="mt-2">
+          <p>Compressed size: {(compressedImage.size / 1024).toFixed(1)} KB</p>
+          <Image
+            src={URL.createObjectURL(compressedImage)}
+            alt="Compressed preview"
+            width={200}
+            height={200}
+            className="object-contain rounded-md border"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AudioSection({
+  audioFile,
+  isRecording,
+  onAudioUploadChange,
+  onToggleRecording,
+  onStop,
+  onData,
+}: {
+  audioFile: File | undefined;
+  isRecording: boolean;
+  onAudioUploadChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onToggleRecording: () => void;
+  onStop: (recordedData: { blob: Blob }) => void;
+  onData: (recordedChunk: Blob) => void;
+}): ReactElement {
+  return (
+    <div>
+      <label className="block font-medium mb-1">2. Provide audio describing the animal:</label>
+      <div className="space-y-4">
+        {/* 2A: Upload existing audio */}
+        <div>
+          <input
+            accept="audio/*"
+            className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer"
+            type="file"
+            onChange={onAudioUploadChange}
+          />
+          {audioFile && (
+            <p className="mt-1 text-sm text-gray-600">
+              Selected audio: {audioFile.name} ({(audioFile.size / 1024).toFixed(1)} KB)
+            </p>
+          )}
+        </div>
+
+        {/* 2B: Record in-browser */}
+        <div>
+          <button
+            onClick={onToggleRecording}
+            className={cn(
+              'px-4 py-2 rounded',
+              isRecording ? 'bg-red-500 text-white' : 'bg-green-500 text-white hover:bg-green-600',
+              'hover:cursor-pointer',
+            )}
+          >
+            {isRecording ? 'Stop recording' : 'Start recording'}
+          </button>
+          <div className="mt-2">
+            <ReactMic
+              record={isRecording}
+              className="w-full"
+              onStop={onStop}
+              onData={onData}
+              mimeType="audio/webm" // record as WebM (reasonable bitrate)
+              strokeColor="#4CAF50"
+              backgroundColor="#f0f0f0"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ResultsSection({ responseData }: { responseData: ProfileResponse | null }): ReactElement | null {
+  if (!responseData) return null;
+
+  return (
+    <div className="mt-6 border-t pt-4 space-y-4">
+      <h2 className="text-xl font-semibold">Generated Tags:</h2>
+      <p>
+        Best tag: <span className="font-bold">{responseData.bestTag}</span>
+      </p>
+      <p>Raw scores:</p>
+      <ul className="list-disc list-inside">
+        {responseData.clipScores.map(({ label, score }) => (
+          <li key={label}>
+            {label} ({score})
+          </li>
+        ))}
+      </ul>
+
+      <h2 className="text-xl font-semibold">Transcribed Audio:</h2>
+      <div className="bg-gray-50 p-4 rounded-lg border">
+        <p className="text-gray-700 italic">"{responseData.transcript}"</p>
+      </div>
+
+      <h2 className="text-xl font-semibold">Profile Summary:</h2>
+      <div className="prose max-w-none">
+        {responseData.summary.split('\n\n').map((para, idx) => (
+          <p key={idx}>{para}</p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function GeneratorPage(): ReactElement {
   // —— State for image upload/compression —— //
   const [rawImageFile, setRawImageFile] = useState<File | undefined>();
@@ -119,7 +259,7 @@ export default function GeneratorPage(): ReactElement {
       return;
     }
 
-    // Build FormData: keys must match what our API will expect (“image” & “audio”)
+    // Build FormData: keys must match what our API will expect ("image" & "audio")
     const formData = new FormData();
     formData.append('image', compressedImage);
     formData.append('audio', audioFile);
@@ -154,82 +294,21 @@ export default function GeneratorPage(): ReactElement {
       <div className="max-w-xl mx-auto p-6 space-y-6">
         <h1 className="text-2xl font-bold">Animal Adoption Profile Demo</h1>
 
-        {/* —— IMAGE UPLOAD + PREVIEW —— */}
-        <div>
-          <label className="block font-medium mb-1">1. Upload an image of the animal:</label>
-          <input
-            accept="image/*"
-            className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer"
-            type="file"
-            ref={fileInputRef}
-            onChange={handleImageChange}
-          />
-          {rawImageFile && (
-            <div className="mt-2">
-              <p>
-                Original: {rawImageFile.name} ({(rawImageFile.size / 1024).toFixed(1)} KB)
-              </p>
-            </div>
-          )}
-          {compressedImage && (
-            <div className="mt-2">
-              <p>Compressed size: {(compressedImage.size / 1024).toFixed(1)} KB</p>
-              <Image
-                src={URL.createObjectURL(compressedImage)}
-                alt="Compressed preview"
-                width={200}
-                height={200}
-                className="object-contain rounded-md border"
-              />
-            </div>
-          )}
-        </div>
+        <ImageUploadSection
+          rawImageFile={rawImageFile}
+          compressedImage={compressedImage}
+          fileInputRef={fileInputRef}
+          onImageChange={handleImageChange}
+        />
 
-        {/* —— AUDIO UPLOAD OR RECORD —— */}
-        <div>
-          <label className="block font-medium mb-1">2. Provide audio describing the animal:</label>
-          <div className="space-y-4">
-            {/* 2A: Upload existing audio */}
-            <div>
-              <input
-                accept="audio/*"
-                className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer"
-                type="file"
-                onChange={handleAudioUploadChange}
-              />
-              {audioFile && (
-                <p className="mt-1 text-sm text-gray-600">
-                  Selected audio: {audioFile.name} ({(audioFile.size / 1024).toFixed(1)} KB)
-                </p>
-              )}
-            </div>
-
-            {/* 2B: Record in-browser */}
-            <div>
-              <button
-                onClick={toggleRecording}
-                className={cn(
-                  'px-4 py-2 rounded',
-                  isRecording ? 'bg-red-500 text-white' : 'bg-green-500 text-white hover:bg-green-600',
-                  'hover:cursor-pointer',
-                )}
-              >
-                {isRecording ? 'Stop recording' : 'Start recording'}
-              </button>
-              <div className="mt-2">
-                <ReactMic
-                  record={isRecording}
-                  className="w-full"
-                  onStop={onStop}
-                  onData={onData}
-                  mimeType="audio/webm" // record as WebM (reasonable bitrate)
-                  strokeColor="#4CAF50"
-                  backgroundColor="#f0f0f0"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <AudioSection
+          audioFile={audioFile}
+          isRecording={isRecording}
+          onAudioUploadChange={handleAudioUploadChange}
+          onToggleRecording={toggleRecording}
+          onStop={onStop}
+          onData={onData}
+        />
 
         {/* —— SUBMIT BUTTON —— */}
         <div>
@@ -250,35 +329,7 @@ export default function GeneratorPage(): ReactElement {
 
         {isGenerating && <div className="mt-6 border-t pt-4 space-y-4">Generating profile ...</div>}
 
-        {/* —— DISPLAY RESULTS —— */}
-        {responseData && (
-          <div className="mt-6 border-t pt-4 space-y-4">
-            <h2 className="text-xl font-semibold">Generated Tags:</h2>
-            <p>
-              Best tag: <span className="font-bold">{responseData.bestTag}</span>
-            </p>
-            <p>Raw scores:</p>
-            <ul className="list-disc list-inside">
-              {responseData.clipScores.map(({ label, score }) => (
-                <li key={label}>
-                  {label} ({score})
-                </li>
-              ))}
-            </ul>
-
-            <h2 className="text-xl font-semibold">Transcribed Audio:</h2>
-            <div className="bg-gray-50 p-4 rounded-lg border">
-              <p className="text-gray-700 italic">"{responseData.transcript}"</p>
-            </div>
-
-            <h2 className="text-xl font-semibold">Profile Summary:</h2>
-            <div className="prose max-w-none">
-              {responseData.summary.split('\n\n').map((para, idx) => (
-                <p key={idx}>{para}</p>
-              ))}
-            </div>
-          </div>
-        )}
+        <ResultsSection responseData={responseData} />
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ export default function HomePage(): ReactElement {
   }, []);
 
   return (
-    <Layout title="Home | Next.js App">
+    <Layout title="Home | Pet Profiler App">
       <h1 className="h1">Welcome to the Pet Profile Generator!</h1>
       <p>The current time is {date && date.toString()}</p>
     </Layout>
