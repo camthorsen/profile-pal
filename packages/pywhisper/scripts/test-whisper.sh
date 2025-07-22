@@ -3,6 +3,6 @@
 curl \
   --silent \
   --show-error \
-  --request POST http://localhost:7861/transcribe \
-  --form "file=@$HOME/Downloads/sample_pet.wav" \
+  --request POST http://localhost:7861/audio/transcribe \
+  --form "audio=@$HOME/Downloads/sample_pet.wav" \
 | jq

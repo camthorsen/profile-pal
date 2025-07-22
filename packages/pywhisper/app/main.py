@@ -5,7 +5,9 @@ import tempfile
 
 app = FastAPI()
 
-# Load tiny model once at startup
+# Load tiny model once at startup.
+# The 'tiny' Whisper model will automatically be downloaded if it is not already present in the cache
+# (usually ~/.cache/huggingface).
 model = whisper.load_model("tiny")
 
 @app.post("/audio/transcribe")
