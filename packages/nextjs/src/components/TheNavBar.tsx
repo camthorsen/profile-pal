@@ -28,7 +28,7 @@ export function TheNavBar(): ReactElement {
             key={item.name}
             href={item.href}
             className={classNames(
-              isCurrent ? 'bg-brand-orange text-gray-900' : 'hover:text-white hover:bg-brand-pink',
+              isCurrent ? 'bg-brand-orange text-gray-900' : 'hover:bg-neutral-200',
               'rounded-md px-3 py-2 text-sm font-medium',
             )}
             aria-current={isCurrent ? 'page' : undefined}

@@ -38,7 +38,7 @@ function ImageUploadSection({
       <label className="block font-medium mb-1">1. Upload an image of the animal:</label>
       <input
         accept="image/*"
-        className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer"
+        className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer rounded"
         type="file"
         ref={fileInputRef}
         onChange={onImageChange}
@@ -89,7 +89,7 @@ function AudioSection({
         <div>
           <input
             accept="audio/*"
-            className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer"
+            className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer rounded"
             type="file"
             onChange={onAudioUploadChange}
           />
@@ -105,12 +105,13 @@ function AudioSection({
           <button
             onClick={onToggleRecording}
             className={cn(
-              'px-4 py-2 rounded',
-              isRecording ? 'bg-red-500 text-white' : 'bg-green-500 text-white hover:bg-green-600',
+              'px-4 py-2 rounded-full',
+              isRecording ? 'bg-red-500 text-white' : 'text-gray-900 hover:bg-neutral-100 border',
               'hover:cursor-pointer',
             )}
           >
-            {isRecording ? 'Stop recording' : 'Start recording'}
+            🔴
+            <span className="ml-2">{isRecording ? 'Stop recording' : 'Start recording'}</span>
           </button>
           <div className="mt-2">
             <ReactMic
@@ -291,9 +292,8 @@ export default function GeneratorPage(): ReactElement {
   return (
     <div className="flex flex-col">
       <Header />
-      <div className="max-w-xl mx-auto p-6 space-y-6">
+      <div className="x-constraint space-y-6 py-8">
         <h1 className="text-2xl font-bold">Animal Adoption Profile Demo</h1>
-
         <ImageUploadSection
           rawImageFile={rawImageFile}
           compressedImage={compressedImage}
@@ -316,11 +316,11 @@ export default function GeneratorPage(): ReactElement {
             disabled={!canGenerate}
             onClick={handleSubmit}
             className={cn(
-              'px-6 py-2 rounded',
+              'px-6 py-2 rounded-full',
               'bg-gray-200',
               !canGenerate,
-              canGenerate && 'bg-blue-600 text-white ',
-              canGenerate && !isGenerating && 'hover:bg-blue-700 hover:cursor-pointer',
+              canGenerate && 'bg-brand-pink text-white ',
+              canGenerate && !isGenerating && 'hover:bg-brand-purple hover:cursor-pointer',
             )}
           >
             {isGenerating ? 'Generating...' : 'Generate profile'}

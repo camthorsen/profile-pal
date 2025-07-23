@@ -5,14 +5,14 @@ import { TheNavBar } from '@/components/TheNavBar.tsx';
 
 export function Header(): ReactElement {
   return (
-    <header className="flex h-16 items-center max-w-7xl px-4 sm:px-6 lg:px-8 gap-8 bg-[#dee1e2]">
-      <Link href="/" className="flex items-center shrink-0">
+    <header className="x-constraint flex h-16 items-center gap-8 bg-white shadow-sm">
+      <Link href="/" className="flex items-center gap-2 shrink-0">
         <img
           alt="Profile Pals"
-          src="/logo-md.jpg"
-          className="h-16"
+          src="/logo-sq.jpg"
+          className="h-12 rounded-full"
         />
-        <span className="text-xl">Profile Pals</span>
+        <span className="text-xl text-brand-purple font-brand">Profile Pals</span>
       </Link>
       <TheNavBar />
     </header>
