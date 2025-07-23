@@ -5,14 +5,14 @@ import { TheNavBar } from '@/components/TheNavBar.tsx';
 
 export function Header(): ReactElement {
   return (
-    <header className="flex h-16 items-center max-w-7xl px-4 sm:px-6 lg:px-8 gap-8 bg-gray-800">
-      <Link href="/" className="flex gap-3 shrink-0">
+    <header className="flex h-16 items-center max-w-7xl px-4 sm:px-6 lg:px-8 gap-8 bg-[#dee1e2]">
+      <Link href="/" className="flex items-center shrink-0">
         <img
-          alt="Pet Profile Generator"
-          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-          className="size-8"
+          alt="Profile Pals"
+          src="/logo-md.jpg"
+          className="h-16"
         />
-        <span className="text-xl text-white">PetProfiler</span>
+        <span className="text-xl">Profile Pals</span>
       </Link>
       <TheNavBar />
     </header>

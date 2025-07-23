@@ -16,7 +16,7 @@ export function TheNavBar(): ReactElement {
   
   const navigation: NavLink[] = [
     { name: 'Home', href: '/' },
-    { name: 'Generator', href: '/generator' },
+    { name: 'Bio Generator', href: '/generator' },
   ];
 
   return (
@@ -28,7 +28,7 @@ export function TheNavBar(): ReactElement {
             key={item.name}
             href={item.href}
             className={classNames(
-              isCurrent ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+              isCurrent ? 'bg-brand-orange text-gray-900' : 'hover:text-white hover:bg-brand-pink',
               'rounded-md px-3 py-2 text-sm font-medium',
             )}
             aria-current={isCurrent ? 'page' : undefined}

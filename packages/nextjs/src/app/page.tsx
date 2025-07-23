@@ -17,6 +17,7 @@ export default function HomePage(): ReactElement {
   return (
     <Layout title="Home | Pet Profiler App">
       <h1 className="h1">Welcome to the Pet Profile Generator!</h1>
+      <img src="/logo-sq.jpg" alt="Profile Pals" className="rounded-full h-36" />
       <p>The current time is {date && date.toString()}</p>
     </Layout>
   );
