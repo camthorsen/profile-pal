@@ -9,19 +9,17 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Flexible LLM Service")
+app = FastAPI(title="Pet Profile LLM Service")
 
 # Pydantic models for request/response
-class GenerateRequest(BaseModel):
+class SummarizeRequest(BaseModel):
     prompt: str
-    model: Optional[str] = "zephyr"  # Default model
-    max_tokens: Optional[int] = 220
-    temperature: Optional[float] = 0.2
-    top_p: Optional[float] = 0.9
-    stop: Optional[list[str]] = ["</s>", "[INST]"]
-    system_prompt: Optional[str] = None
+    model: Optional[str] = "tiny" # Default to tiny for speed, but can be overridden in ai-host
+    max_tokens: Optional[int] = 150
+    temperature: Optional[float] = 0.5
+    top_p: Optional[float] = 0.85
 
-class GenerateResponse(BaseModel):
+class SummarizeResponse(BaseModel):
     text: str
     model: str
     tokens_used: Optional[int] = None
@@ -79,7 +77,7 @@ async def root():
     """Health check endpoint"""
     return {
         "status": "healthy",
-        "service": "Flexible LLM Service",
+        "service": "Pet Profile LLM Service",
         "available_models": list(models.keys()),
         "port": 7862
     }
@@ -92,10 +90,10 @@ async def list_models():
         "model_configs": MODEL_CONFIGS
     }
 
-@app.post("/generate", response_model=GenerateResponse)
-async def generate_text(request: GenerateRequest):
-    """Generate text using the specified model"""
-
+@app.post("/summarize", response_model=SummarizeResponse)
+async def summarize_profile(request: SummarizeRequest):
+    """Generate high-quality pet adoption profiles in a single LLM call"""
+    
     # Validate model
     if request.model not in models:
         available_models = list(models.keys())
@@ -107,74 +105,37 @@ async def generate_text(request: GenerateRequest):
     model = models[request.model]
 
     try:
-        # Build the prompt
-        if request.system_prompt:
-            full_prompt = f"<s>[INST] {request.system_prompt} [/INST] {request.prompt}"
-        else:
-            full_prompt = request.prompt
+        # Enhanced system prompt for high-quality profile generation
+        system_prompt = (
+            "You are an expert content writer who is creating a brief, engaging pet adoption profile for a pet adoption website. "
+            "Do not make assumptions about the animal. Use ONLY the specific facts about the animal provided in the description. "
+            "Write a bio for the animal in roughly 2-3 sentences using the third person perspective. Be specific and avoid repetition. "
+            "Avoid generic stand-alone descriptions like, 'She is looking for a home where she can be pampered'. "
+            "Focus on what makes this animal unique based on the given details. "
+            "Do not use the word 'she likes' or 'he likes' in the profile, unless it is explicitly mentioned in the description. "
+            "Do not use the word 'she does not like' or 'he does not like' in the profile, unless it is explicitly mentioned in the description. "
+        )
 
-        # Generate response
+        # Build the full prompt with system instruction
+        full_prompt = f"<s>[INST] {system_prompt} [/INST] Animal information: {request.prompt}"
+
+        # Generate response with optimized parameters
         response = model(
             full_prompt,
             max_tokens=request.max_tokens,
             temperature=request.temperature,
             top_p=request.top_p,
-            stop=request.stop,
+            stop=["</s>", "[INST]", "\n\n", "\n\n\n", "###"],  # Better stop tokens
         )
 
         generated_text = response["choices"][0]["text"].strip()
 
-        return GenerateResponse(
+        return SummarizeResponse(
             text=generated_text,
             model=request.model,
             tokens_used=response.get("usage", {}).get("total_tokens")
         )
 
     except Exception as e:
-        logger.error(f"Error generating text with {request.model}: {e}")
-        raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
-
-@app.post("/summarize")
-async def summarize_profile(request: GenerateRequest):
-    """Specialized endpoint for generating pet adoption profiles"""
-
-    system_prompt = (
-        "You are a helpful assistant that writes warm, professional third-person animal adoption profiles. "
-        "Write 1-2 paragraphs that capture the animal's personality, appearance, and behavior. "
-        "Be concise but engaging. Focus on what makes this animal special and adoptable."
-    )
-
-    # Override the request with profile-specific settings
-    profile_request = GenerateRequest(
-        prompt=request.prompt,
-        model=request.model,
-        max_tokens=200,  # Increased for better summaries
-        temperature=0.3,  # Slightly higher for more creative writing
-        top_p=0.9,
-        stop=["</s>", "[INST]", "\n\n\n"],  # Stop on multiple newlines to prevent repetition
-        system_prompt=system_prompt
-    )
-
-    return await generate_text(profile_request)
-
-@app.post("/improve")
-async def improve_text(request: GenerateRequest):
-    """Specialized endpoint for improving text quality"""
-
-    system_prompt = (
-        "You are an expert editor. Rewrite the following text to read more naturally, "
-        "with better grammar, spelling, and flow while preserving the original meaning."
-    )
-
-    # Override the request with improvement-specific settings
-    improve_request = GenerateRequest(
-        prompt=request.prompt,
-        model=request.model,
-        max_tokens=request.max_tokens or 128,
-        temperature=0.3,
-        top_p=0.9,
-        stop=["</s>", "[INST]"],
-        system_prompt=system_prompt
-    )
-
-    return await generate_text(improve_request)
+        logger.error(f"Error generating profile with {request.model}: {e}")
+        raise HTTPException(status_code=500, detail=f"Profile generation failed: {str(e)}")

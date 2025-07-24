@@ -14,7 +14,7 @@ export async function summarizeWithDockerLLM(transcript: string, animalType: str
       },
       body: JSON.stringify({
         prompt: enhancedPrompt,
-        model: 'tiny', // Use the tiny model for faster response
+        model: 'zephyr',
       }),
     });
 

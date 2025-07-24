@@ -58,7 +58,7 @@ fi'
 time_step "4. Testing summarize endpoint" bash -c '
 response=$(curl -s -X POST http://localhost:7862/summarize \
   -H "Content-Type: application/json" \
-  -d "{\"prompt\": \"This is Daisy the cat. She is, uh, fluffy and friendly.\", \"model\": \"tiny\"}")
+  -d "{\"prompt\": \"Create an adoption profile for this cat based on the following information:\n\nDescription: This is Sassy, she is a cat. She likes dogs, she does not like people.\n\nWrite a brief, engaging profile that uses the specific details provided.\", \"model\": \"tiny\"}")
 
 if echo "$response" | grep -q "text"; then
     echo "✅ Summarize endpoint works"
