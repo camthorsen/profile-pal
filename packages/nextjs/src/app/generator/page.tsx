@@ -10,6 +10,7 @@ import { type ChangeEvent, type FormEvent, type ReactElement, useRef, useState }
 
 import { Header } from '@/components/Header.tsx';
 import { Card } from '@/components/Card.tsx';
+import { DragDropInput } from '@/components/DragDropInput.tsx';
 import { cn } from '@/utils/cn.ts';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
@@ -34,43 +35,32 @@ function ImageUploadSection({
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   onImageChange: (e: ChangeEvent<HTMLInputElement>) => Promise<void>;
 }): ReactElement {
+  const uploadIcon = (
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+    </svg>
+  );
+
+  const successIcon = (
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    </svg>
+  );
+
   return (
     <div>
-      <label className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
-        <input
-          accept="image/*"
-          className="sr-only"
-          type="file"
-          ref={fileInputRef}
-          onChange={onImageChange}
-        />
-        {!compressedImage ? (
-          <div>
-            <div className="mx-auto h-12 w-12 text-gray-400">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
-            </div>
-            <div className="mt-4 text-center text-sm text-gray-600">
-              <span className="relative rounded-md font-medium text-indigo-600 hover:text-indigo-500">
-                Upload a file
-              </span>
-              <span className="pl-1">or drag and drop</span>
-            </div>
-            <p className="mt-2 text-center text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-          </div>
-        ) : (
-          <div>
-            <div className="mx-auto h-12 w-12 text-green-400">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <p className="mt-2 text-center text-sm text-gray-600">Image uploaded successfully</p>
-            <p className="text-center text-xs text-gray-500">Click to upload a different image</p>
-          </div>
-        )}
-      </label>
+      <DragDropInput
+        accept="image/*"
+        file={compressedImage}
+        onFileChange={onImageChange}
+        fileInputRef={fileInputRef}
+        uploadText="Upload an image"
+        fileTypesText="PNG, JPG, GIF up to 10MB"
+        successText="Image uploaded successfully"
+        changeText="Click to upload a different image"
+        uploadIcon={uploadIcon}
+        successIcon={successIcon}
+      />
       
       {rawImageFile && (
         <div className="mt-4 text-sm text-gray-600">
@@ -108,15 +98,33 @@ function AudioSection({
   onStop: (recordedData: { blob: Blob }) => void;
   onData: (recordedChunk: Blob) => void;
 }): ReactElement {
+  const uploadIcon = (
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+    </svg>
+  );
+
+  const successIcon = (
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    </svg>
+  );
+
   return (
     <div className="space-y-4">
       {/* 2A: Upload existing audio */}
       <div>
-        <input
+        <DragDropInput
           accept="audio/*"
-          className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer rounded"
-          type="file"
-          onChange={onAudioUploadChange}
+          file={audioFile}
+          onFileChange={onAudioUploadChange}
+          fileInputRef={null}
+          uploadText="Upload an audio file"
+          fileTypesText="MP3, WAV, M4A up to 4MB"
+          successText="Audio file uploaded successfully"
+          changeText="Click to upload a different audio file"
+          uploadIcon={uploadIcon}
+          successIcon={successIcon}
         />
         {audioFile && (
           <p className="mt-1 text-sm text-gray-600">
@@ -333,7 +341,7 @@ export default function GeneratorPage(): ReactElement {
           />
         </Card>
         
-        <Card title="Audio Description" stepNumber={2} description="Record or provide an audio clip describing the animal.">
+        <Card title="Audio Description" stepNumber={2} description="Record or provide an audio clip describing the animal. For faster results, keep the clip short (15-30 seconds).">
           <AudioSection
             audioFile={audioFile}
             isRecording={isRecording}
