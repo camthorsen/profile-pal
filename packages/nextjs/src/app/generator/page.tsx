@@ -8,9 +8,11 @@ import Image from 'next/image';
 import type { ClipScore } from 'pet-profiler-api';
 import { type ChangeEvent, type FormEvent, type ReactElement, useRef, useState } from 'react';
 
-import { Header } from '@/components/Header.tsx';
 import { Card } from '@/components/Card.tsx';
 import { DragDropInput } from '@/components/DragDropInput.tsx';
+import { Header } from '@/components/Header.tsx';
+import { H1 } from '@/components/typography/H1.tsx';
+import { H2 } from '@/components/typography/H2.tsx';
 import { cn } from '@/utils/cn.ts';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
@@ -326,8 +328,8 @@ export default function GeneratorPage(): ReactElement {
       <div className="grid md:grid-cols-3 x-constraint gap-8 py-12">
 
         {/* Tips card */}
-        <div className="rounded-lg shodow-md pd-6 flex flex-col bg-brand-orange p-6">
-          <h2 className="text-lg font-bold mb-2">Audio Recording Tips</h2>
+                 <div className="rounded-lg shodow-md pd-6 flex flex-col bg-brand-orange p-6">
+           <H2 className="mb-2">Audio Recording Tips</H2>
           <p className="mb-4">
             Focus on the facts and briefly mention the following:
           </p>
@@ -350,11 +352,11 @@ export default function GeneratorPage(): ReactElement {
         {/* Form upload section */}
         <div className="md:col-span-2 space-y-8">
           <div className="flex flex-col gap-2">
-            <h1 className="text-2xl font-bold">Animal Adoption Profile Demo</h1>
-            <p className="text-gray-600 mb-4">
-              This is a demo of the animal adoption profile generator. It uses a simple image and audio to generate a profile.
-            </p>
-          </div>
+            <H1>Animal Adoption Profile Demo</H1>
+          <p className="text-gray-600 mb-4">
+            This is a demo of the animal adoption profile generator. It uses a simple image and audio to generate a profile.
+          </p>
+        </div>
 
           <Card title="Image Upload" stepNumber={1} description="Upload a well-lit image of the animal you want to create a profile for.">
             <ImageUploadSection
