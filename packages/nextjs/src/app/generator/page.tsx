@@ -114,12 +114,11 @@ function AudioSection({
     <div className="space-y-4">
       {/* 2A: Upload existing audio */}
       <div>
-        <DragDropInput
-          accept="audio/*"
-          file={audioFile}
-          onFileChange={onAudioUploadChange}
-          fileInputRef={null}
-          uploadText="Upload an audio file"
+                 <DragDropInput
+           accept="audio/*"
+           file={audioFile}
+           onFileChange={onAudioUploadChange}
+           uploadText="Upload an audio file"
           fileTypesText="MP3, WAV, M4A up to 4MB"
           successText="Audio file uploaded successfully"
           changeText="Click to upload a different audio file"
@@ -324,55 +323,83 @@ export default function GeneratorPage(): ReactElement {
   return (
     <div className="flex flex-col bg-neutral-100 min-h-screen">
       <Header />
-      <div className="x-constraint space-y-8 py-12">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold">Animal Adoption Profile Demo</h1>
-          <p className="text-gray-600 mb-4">
-            This is a demo of the animal adoption profile generator. It uses a simple image and audio to generate a profile.
+      <div className="grid md:grid-cols-3 x-constraint gap-8 py-12">
+
+        {/* Tips card */}
+        <div className="rounded-lg shodow-md pd-6 flex flex-col bg-brand-orange p-6">
+          <h2 className="text-lg font-bold mb-2">Audio Recording Tips</h2>
+          <p className="mb-4">
+            Focus on the facts and briefly mention the following:
           </p>
+          <ul className="list-disc list-outside px-6">
+            <li>
+              <strong>Age</strong>, <strong>breed</strong>, and <strong>size</strong> of the animal
+            </li>
+            <li>
+              Spay/neuter status, health conditions, and <strong>special needs</strong> (e.g., only cat in the house)
+            </li>
+            <li>
+              <strong>Rescue circumstances</strong> (e.g., owner surrendered, rescued from a hoarding situation, etc.)
+            </li>
+            <li>
+              <strong>Distinct traits</strong>, behavioural characteristics (e.g., loves to play fetch, loves to cuddle)
+            </li>
+          </ul>
         </div>
 
-        <Card title="Image Upload" stepNumber={1} description="Upload a well-lit image of the animal you want to create a profile for.">
-          <ImageUploadSection
-            rawImageFile={rawImageFile}
-            compressedImage={compressedImage}
-            fileInputRef={fileInputRef}
-            onImageChange={handleImageChange}
-          />
-        </Card>
+        {/* Form upload section */}
+        <div className="md:col-span-2 space-y-8">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-bold">Animal Adoption Profile Demo</h1>
+            <p className="text-gray-600 mb-4">
+              This is a demo of the animal adoption profile generator. It uses a simple image and audio to generate a profile.
+            </p>
+          </div>
+
+          <Card title="Image Upload" stepNumber={1} description="Upload a well-lit image of the animal you want to create a profile for.">
+            <ImageUploadSection
+              rawImageFile={rawImageFile}
+              compressedImage={compressedImage}
+              fileInputRef={fileInputRef}
+              onImageChange={handleImageChange}
+            />
+          </Card>
+          
+          <Card title="Audio Description" stepNumber={2} description="Record or provide an audio clip describing the animal. For faster results, keep the clip short (15-30 seconds).">
+            <AudioSection
+              audioFile={audioFile}
+              isRecording={isRecording}
+              onAudioUploadChange={handleAudioUploadChange}
+              onToggleRecording={toggleRecording}
+              onStop={onStop}
+              onData={onData}
+            />
+          </Card>
+
+          {/* —— SUBMIT BUTTON —— */}
+          <div className="flex justify-center">
+            <button
+              disabled={!canGenerate}
+              onClick={handleSubmit}
+              className={cn(
+                'px-6 py-2 rounded-full',
+                'bg-gray-300',
+                !canGenerate,
+                canGenerate && 'bg-brand-pink text-white ',
+                canGenerate && !isGenerating && 'hover:bg-brand-purple hover:cursor-pointer',
+              )}
+            >
+              {isGenerating ? 'Generating...' : 'Generate profile'}
+            </button>
+          </div>
+
+          {isGenerating && <div className="mt-6 border-t pt-4 space-y-4">Generating profile ...</div>}
+
+          <ResultsSection responseData={responseData} />
+        </div>
         
-        <Card title="Audio Description" stepNumber={2} description="Record or provide an audio clip describing the animal. For faster results, keep the clip short (15-30 seconds).">
-          <AudioSection
-            audioFile={audioFile}
-            isRecording={isRecording}
-            onAudioUploadChange={handleAudioUploadChange}
-            onToggleRecording={toggleRecording}
-            onStop={onStop}
-            onData={onData}
-          />
-        </Card>
-
-        {/* —— SUBMIT BUTTON —— */}
-        <div className="flex justify-center">
-          <button
-            disabled={!canGenerate}
-            onClick={handleSubmit}
-            className={cn(
-              'px-6 py-2 rounded-full',
-              'bg-gray-300',
-              !canGenerate,
-              canGenerate && 'bg-brand-pink text-white ',
-              canGenerate && !isGenerating && 'hover:bg-brand-purple hover:cursor-pointer',
-            )}
-          >
-            {isGenerating ? 'Generating...' : 'Generate profile'}
-          </button>
-        </div>
-
-        {isGenerating && <div className="mt-6 border-t pt-4 space-y-4">Generating profile ...</div>}
-
-        <ResultsSection responseData={responseData} />
       </div>
+  
     </div>
   );
 }
