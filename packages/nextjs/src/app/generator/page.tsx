@@ -36,7 +36,6 @@ function ImageUploadSection({
 }): ReactElement {
   return (
     <div>
-      <label className="block font-medium mb-1">1. Upload an image of the animal:</label>
       <input
         accept="image/*"
         className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer rounded"
@@ -83,48 +82,45 @@ function AudioSection({
   onData: (recordedChunk: Blob) => void;
 }): ReactElement {
   return (
-    <div>
-      <label className="block font-medium mb-1">2. Provide audio describing the animal:</label>
-      <div className="space-y-4">
-        {/* 2A: Upload existing audio */}
-        <div>
-          <input
-            accept="audio/*"
-            className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer rounded"
-            type="file"
-            onChange={onAudioUploadChange}
-          />
-          {audioFile && (
-            <p className="mt-1 text-sm text-gray-600">
-              Selected audio: {audioFile.name} ({(audioFile.size / 1024).toFixed(1)} KB)
-            </p>
-          )}
-        </div>
+    <div className="space-y-4">
+      {/* 2A: Upload existing audio */}
+      <div>
+        <input
+          accept="audio/*"
+          className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer rounded"
+          type="file"
+          onChange={onAudioUploadChange}
+        />
+        {audioFile && (
+          <p className="mt-1 text-sm text-gray-600">
+            Selected audio: {audioFile.name} ({(audioFile.size / 1024).toFixed(1)} KB)
+          </p>
+        )}
+      </div>
 
-        {/* 2B: Record in-browser */}
-        <div>
-          <button
-            onClick={onToggleRecording}
-            className={cn(
-              'px-4 py-2 rounded-full',
-              isRecording ? 'bg-red-500 text-white' : 'text-gray-900 hover:bg-neutral-100 border',
-              'hover:cursor-pointer',
-            )}
-          >
-            🔴
-            <span className="ml-2">{isRecording ? 'Stop recording' : 'Start recording'}</span>
-          </button>
-          <div className="mt-2">
-            <ReactMic
-              record={isRecording}
-              className="w-full"
-              onStop={onStop}
-              onData={onData}
-              mimeType="audio/webm" // record as WebM (reasonable bitrate)
-              strokeColor="#4CAF50"
-              backgroundColor="#f0f0f0"
-            />
-          </div>
+      {/* 2B: Record in-browser */}
+      <div>
+        <button
+          onClick={onToggleRecording}
+          className={cn(
+            'px-4 py-2 rounded-full',
+            isRecording ? 'bg-red-500 text-white' : 'text-gray-900 hover:bg-neutral-100 border',
+            'hover:cursor-pointer',
+          )}
+        >
+          🔴
+          <span className="ml-2">{isRecording ? 'Stop recording' : 'Start recording'}</span>
+        </button>
+        <div className="mt-2">
+          <ReactMic
+            record={isRecording}
+            className="w-full"
+            onStop={onStop}
+            onData={onData}
+            mimeType="audio/webm" // record as WebM (reasonable bitrate)
+            strokeColor="#4CAF50"
+            backgroundColor="#f0f0f0"
+          />
         </div>
       </div>
     </div>
@@ -293,9 +289,15 @@ export default function GeneratorPage(): ReactElement {
   return (
     <div className="flex flex-col bg-neutral-100 min-h-screen">
       <Header />
-      <div className="x-constraint space-y-6 py-8">
-        <h1 className="text-2xl font-bold">Animal Adoption Profile Demo</h1>
-        <Card title="Image Upload" stepNumber={1}>
+      <div className="x-constraint space-y-8 py-12">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-bold">Animal Adoption Profile Demo</h1>
+          <p className="text-gray-600 mb-4">
+            This is a demo of the animal adoption profile generator. It uses a simple image and audio to generate a profile.
+          </p>
+        </div>
+
+        <Card title="Image Upload" stepNumber={1} description="Upload a well-lit image of the animal you want to create a profile for.">
           <ImageUploadSection
             rawImageFile={rawImageFile}
             compressedImage={compressedImage}
@@ -304,7 +306,7 @@ export default function GeneratorPage(): ReactElement {
           />
         </Card>
         
-                <Card title="Audio Description" stepNumber={2}>
+        <Card title="Audio Description" stepNumber={2} description="Record or provide an audio clip describing the animal.">
           <AudioSection
             audioFile={audioFile}
             isRecording={isRecording}
@@ -316,13 +318,13 @@ export default function GeneratorPage(): ReactElement {
         </Card>
 
         {/* —— SUBMIT BUTTON —— */}
-        <div>
+        <div className="flex justify-center">
           <button
             disabled={!canGenerate}
             onClick={handleSubmit}
             className={cn(
               'px-6 py-2 rounded-full',
-              'bg-gray-200',
+              'bg-gray-300',
               !canGenerate,
               canGenerate && 'bg-brand-pink text-white ',
               canGenerate && !isGenerating && 'hover:bg-brand-purple hover:cursor-pointer',
