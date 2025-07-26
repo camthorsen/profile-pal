@@ -9,6 +9,7 @@ import type { ClipScore } from 'pet-profiler-api';
 import { type ChangeEvent, type FormEvent, type ReactElement, useRef, useState } from 'react';
 
 import { Header } from '@/components/Header.tsx';
+import { Card } from '@/components/Card.tsx';
 import { cn } from '@/utils/cn.ts';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
@@ -290,25 +291,29 @@ export default function GeneratorPage(): ReactElement {
   const canGenerate = !!(compressedImage && audioFile);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-neutral-100 min-h-screen">
       <Header />
       <div className="x-constraint space-y-6 py-8">
         <h1 className="text-2xl font-bold">Animal Adoption Profile Demo</h1>
-        <ImageUploadSection
-          rawImageFile={rawImageFile}
-          compressedImage={compressedImage}
-          fileInputRef={fileInputRef}
-          onImageChange={handleImageChange}
-        />
-
-        <AudioSection
-          audioFile={audioFile}
-          isRecording={isRecording}
-          onAudioUploadChange={handleAudioUploadChange}
-          onToggleRecording={toggleRecording}
-          onStop={onStop}
-          onData={onData}
-        />
+        <Card title="Image Upload" stepNumber={1}>
+          <ImageUploadSection
+            rawImageFile={rawImageFile}
+            compressedImage={compressedImage}
+            fileInputRef={fileInputRef}
+            onImageChange={handleImageChange}
+          />
+        </Card>
+        
+                <Card title="Audio Description" stepNumber={2}>
+          <AudioSection
+            audioFile={audioFile}
+            isRecording={isRecording}
+            onAudioUploadChange={handleAudioUploadChange}
+            onToggleRecording={toggleRecording}
+            onStop={onStop}
+            onData={onData}
+          />
+        </Card>
 
         {/* —— SUBMIT BUTTON —— */}
         <div>

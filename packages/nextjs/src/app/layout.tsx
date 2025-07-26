@@ -3,7 +3,7 @@ import type { PropsWithChildren, ReactElement } from 'react';
 import '../styles/globals.css';
 
 export const metadata = {
-  title: 'Profile Pals',
+  title: 'Profile Pal',
   description: 'Generate pet profiles from audio and images',
   icons: {
     icon: '/logo-sm.jpg',
