@@ -36,23 +36,50 @@ function ImageUploadSection({
 }): ReactElement {
   return (
     <div>
-      <input
-        accept="image/*"
-        className="border-1 p-2 hover:bg-gray-100 hover:cursor-pointer rounded"
-        type="file"
-        ref={fileInputRef}
-        onChange={onImageChange}
-      />
+      <label className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 p-12 text-center hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
+        <input
+          accept="image/*"
+          className="sr-only"
+          type="file"
+          ref={fileInputRef}
+          onChange={onImageChange}
+        />
+        {!compressedImage ? (
+          <div>
+            <div className="mx-auto h-12 w-12 text-gray-400">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+            </div>
+            <div className="mt-4 text-center text-sm text-gray-600">
+              <span className="relative rounded-md font-medium text-indigo-600 hover:text-indigo-500">
+                Upload a file
+              </span>
+              <span className="pl-1">or drag and drop</span>
+            </div>
+            <p className="mt-2 text-center text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+          </div>
+        ) : (
+          <div>
+            <div className="mx-auto h-12 w-12 text-green-400">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <p className="mt-2 text-center text-sm text-gray-600">Image uploaded successfully</p>
+            <p className="text-center text-xs text-gray-500">Click to upload a different image</p>
+          </div>
+        )}
+      </label>
+      
       {rawImageFile && (
-        <div className="mt-2">
-          <p>
-            Original: {rawImageFile.name} ({(rawImageFile.size / 1024).toFixed(1)} KB)
-          </p>
+        <div className="mt-4 text-sm text-gray-600">
+          <p>Original: {rawImageFile.name} ({(rawImageFile.size / 1024).toFixed(1)} KB)</p>
         </div>
       )}
       {compressedImage && (
-        <div className="mt-2">
-          <p>Compressed size: {(compressedImage.size / 1024).toFixed(1)} KB</p>
+        <div className="mt-4">
+          <p className="text-sm text-gray-600 mb-2">Compressed size: {(compressedImage.size / 1024).toFixed(1)} KB</p>
           <Image
             src={URL.createObjectURL(compressedImage)}
             alt="Compressed preview"
