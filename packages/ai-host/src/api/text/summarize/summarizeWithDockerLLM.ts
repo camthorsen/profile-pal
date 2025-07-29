@@ -14,7 +14,7 @@ export async function summarizeWithDockerLLM(transcript: string, animalType: str
       },
       body: JSON.stringify({
         prompt: enhancedPrompt,
-        model: 'zephyr',
+        model: 'tiny',
       }),
     });
 
@@ -27,7 +27,7 @@ export async function summarizeWithDockerLLM(transcript: string, animalType: str
     assert(typeof result.text === 'string');
     return result.text;
   } catch (error: unknown) {
-    console.error('❌ LLM summarization failed:', error);
+    console.error('ERROR: LLLM summarization failed:', error);
     throw error;
   }
 } 
