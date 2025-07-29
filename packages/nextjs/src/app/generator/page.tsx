@@ -9,6 +9,7 @@ import type { ClipScore } from 'pet-profiler-api';
 import { type ChangeEvent, type FormEvent, type ReactElement, useRef, useState } from 'react';
 
 import { Card } from '@/components/Card.tsx';
+import { CopyToClipboard } from '@/components/CopyToClipboard.tsx';
 import { DragDropInput } from '@/components/DragDropInput.tsx';
 import { Header } from '@/components/Header.tsx';
 import { H1 } from '@/components/typography/H1.tsx';
@@ -186,7 +187,14 @@ function ResultsSection({ responseData }: { responseData: ProfileResponse | null
         <p className="text-gray-700 italic">"{responseData.transcript}"</p>
       </div>
 
-      <h2 className="text-xl font-semibold">Profile Summary:</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">Profile Summary:</h2>
+        <CopyToClipboard 
+          text={responseData.summary} 
+          buttonText="Copy Summary"
+          successText="Summary Copied!"
+        />
+      </div>
       <div className="prose max-w-none">
         {responseData.summary.split('\n\n').map((para, idx) => (
           <p key={idx}>{para}</p>
