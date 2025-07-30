@@ -12,7 +12,7 @@ interface CopyToClipboardProps {
   className?: string;
 }
 
-export function CopyToClipboard({
+export function CopyToClipboardButton({
   text,
   buttonText = 'Copy',
   successText = 'Copied!',
@@ -28,7 +28,7 @@ export function CopyToClipboard({
     } catch (error) {
       console.error('Failed to copy text:', error);
     }
-  };
+  }
 
   return (
     <SecondaryButton
