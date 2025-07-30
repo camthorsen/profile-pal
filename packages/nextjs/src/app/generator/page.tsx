@@ -14,6 +14,8 @@ import { DragDropInput } from '@/components/DragDropInput.tsx';
 import { Header } from '@/components/Header.tsx';
 import { H1 } from '@/components/typography/H1.tsx';
 import { H2 } from '@/components/typography/H2.tsx';
+import { LoadingSpinner } from '@/components/LoadingSpinner.tsx';
+import { PrimaryButton } from '@/components/PrimaryButton.tsx';
 import { cn } from '@/utils/cn.ts';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
@@ -40,7 +42,12 @@ function ImageUploadSection({
 }): ReactElement {
   const uploadIcon = (
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+      />
     </svg>
   );
 
@@ -64,10 +71,12 @@ function ImageUploadSection({
         uploadIcon={uploadIcon}
         successIcon={successIcon}
       />
-      
+
       {rawImageFile && (
         <div className="mt-4 text-sm text-gray-600">
-          <p>Original: {rawImageFile.name} ({(rawImageFile.size / 1024).toFixed(1)} KB)</p>
+          <p>
+            Original: {rawImageFile.name} ({(rawImageFile.size / 1024).toFixed(1)} KB)
+          </p>
         </div>
       )}
       {compressedImage && (
@@ -103,7 +112,12 @@ function AudioSection({
 }): ReactElement {
   const uploadIcon = (
     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+      />
     </svg>
   );
 
@@ -117,11 +131,11 @@ function AudioSection({
     <div className="space-y-4">
       {/* 2A: Upload existing audio */}
       <div>
-                 <DragDropInput
-           accept="audio/*"
-           file={audioFile}
-           onFileChange={onAudioUploadChange}
-           uploadText="Upload an audio file"
+        <DragDropInput
+          accept="audio/*"
+          file={audioFile}
+          onFileChange={onAudioUploadChange}
+          uploadText="Upload an audio file"
           fileTypesText="MP3, WAV, M4A up to 4MB"
           successText="Audio file uploaded successfully"
           changeText="Click to upload a different audio file"
@@ -189,11 +203,7 @@ function ResultsSection({ responseData }: { responseData: ProfileResponse | null
 
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Profile Summary:</h2>
-        <CopyToClipboard 
-          text={responseData.summary} 
-          buttonText="Copy Summary"
-          successText="Summary Copied!"
-        />
+        <CopyToClipboard text={responseData.summary} buttonText="Copy Summary" successText="Summary Copied!" />
       </div>
       <div className="prose max-w-none">
         {responseData.summary.split('\n\n').map((para, idx) => (
@@ -289,9 +299,7 @@ export default function GeneratorPage(): ReactElement {
   /**
    * 3) Package compressedImage + audioFile into FormData and POST to the API route.
    */
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-
+  async function handleSubmit() {
     setIsGenerating(true);
     setResponseData(null);
 
@@ -334,13 +342,10 @@ export default function GeneratorPage(): ReactElement {
     <div className="flex flex-col bg-neutral-100 min-h-screen">
       <Header />
       <div className="grid md:grid-cols-3 x-constraint gap-8 py-12">
-
         {/* Tips card */}
         <div className="rounded-lg shodow-md flex flex-col bg-brand-orange p-10">
-           <H2 className="mb-2">Audio Recording Tips</H2>
-          <p className="mb-4">
-            Focus on the facts and briefly mention the following:
-          </p>
+          <H2 className="mb-2">Audio Recording Tips</H2>
+          <p className="mb-4">Focus on the facts and briefly mention the following:</p>
           <ul className="list-disc list-outside px-6">
             <li>
               <strong>Age</strong>, <strong>breed</strong>, and <strong>size</strong> of the animal
@@ -361,12 +366,17 @@ export default function GeneratorPage(): ReactElement {
         <div className="md:col-span-2 space-y-8">
           <div className="flex flex-col gap-2">
             <H1>Animal Adoption Profile Demo</H1>
-          <p className="text-gray-600 mb-4">
-            This is a demo of the animal adoption profile generator. It uses a simple image and audio to generate a profile.
-          </p>
-        </div>
+            <p className="text-gray-600 mb-4">
+              This is a demo of the animal adoption profile generator. It uses a simple image and audio to generate a
+              profile.
+            </p>
+          </div>
 
-          <Card title="Image Upload" stepNumber={1} description="Upload a well-lit image of the animal you want to create a profile for.">
+          <Card
+            title="Image Upload"
+            stepNumber={1}
+            description="Upload a well-lit image of the animal you want to create a profile for."
+          >
             <ImageUploadSection
               rawImageFile={rawImageFile}
               compressedImage={compressedImage}
@@ -374,8 +384,12 @@ export default function GeneratorPage(): ReactElement {
               onImageChange={handleImageChange}
             />
           </Card>
-          
-          <Card title="Audio Description" stepNumber={2} description="Record or provide an audio clip describing the animal. For faster results, keep the clip short (15-30 seconds).">
+
+          <Card
+            title="Audio Description"
+            stepNumber={2}
+            description="Record or provide an audio clip describing the animal. For faster results, keep the clip short (15-30 seconds)."
+          >
             <AudioSection
               audioFile={audioFile}
               isRecording={isRecording}
@@ -386,37 +400,22 @@ export default function GeneratorPage(): ReactElement {
             />
           </Card>
 
-                  {/* —— SUBMIT BUTTON —— */}
-        <div className="flex justify-center">
-          <button
-            disabled={!canGenerate}
-            onClick={handleSubmit}
-            className={cn(
-              'px-6 py-2 rounded-full flex items-center gap-2',
-              'bg-gray-300',
-              !canGenerate,
-              canGenerate && 'bg-brand-pink text-white ',
-              canGenerate && !isGenerating && 'hover:bg-brand-purple hover:cursor-pointer',
-            )}
-          >
-            {isGenerating && (
-              // SVG taken from: https://flowbite.com/docs/components/spinner/
-              <svg aria-hidden="true" className="w-5 h-5 text-white animate-spin fill-neutral-900" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-              </svg>
-            )}
-            {isGenerating ? 'Generating...' : 'Generate profile'}
-          </button>
-        </div>
+          {/* —— SUBMIT BUTTON —— */}
+          <div className="flex justify-center">
+            <PrimaryButton
+              onClick={handleSubmit}
+              disabled={!canGenerate}
+              icon={isGenerating ? <LoadingSpinner /> : undefined}
+              text={isGenerating ? 'Generating...' : 'Generate profile'}
+              className={cn(isGenerating && 'bg-brand-pink-dark cursor-default')}
+            />
+          </div>
 
           {isGenerating && <div className="mt-6 border-t pt-4 space-y-4">Generating profile ...</div>}
 
           <ResultsSection responseData={responseData} />
         </div>
-        
       </div>
-  
     </div>
   );
 }
