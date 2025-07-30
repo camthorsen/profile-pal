@@ -2,12 +2,14 @@
 
 import type { ReactElement } from 'react';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import Layout from '../components/Layout.jsx';
 import { Header } from '@/components/Header.jsx';
 import { PrimaryButton } from '@/components/PrimaryButton.jsx';
 
 export default function HomePage(): ReactElement {
+  const router = useRouter();
   const [date, setDate] = useState<Date | undefined>();
 
   useEffect(() => {
@@ -27,7 +29,7 @@ export default function HomePage(): ReactElement {
               This is an AI tool that allows you to generate a profile for your pet.
             </p>
             <div className="flex mt-3">
-              <PrimaryButton text="Get Started" />
+              <PrimaryButton text="Get Started" onClick={() => router.push('/generator')} />
             </div>
           </div>
           <div className="flex flex-col items-center gap-4">
