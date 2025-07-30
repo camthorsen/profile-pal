@@ -349,7 +349,7 @@ export default function GeneratorPage(): ReactElement {
       <Header />
       <div className="grid md:grid-cols-3 x-constraint gap-8 py-12">
         {/* Tips card */}
-        <div className="rounded-lg shodow-md flex flex-col bg-brand-orange p-10">
+        <div className="rounded-lg shadow-md flex flex-col bg-brand-orange p-10">
           <H2 className="mb-2">Audio Recording Tips</H2>
           <p className="mb-4">Focus on the facts and briefly mention the following:</p>
           <ul className="list-disc list-outside px-6">
