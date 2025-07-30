@@ -1,17 +1,19 @@
-import { TheNavBar } from '@/components/TheNavBar.tsx';
+import Link from 'next/link';
 import type { ReactElement } from 'react';
+
+import { TheNavBar } from '@/components/TheNavBar.tsx';
 
 export function Header(): ReactElement {
   return (
-    <header className="flex h-16 items-center max-w-7xl px-4 sm:px-6 lg:px-8 gap-8 bg-gray-800">
-      <div className="flex gap-3 shrink-0">
+    <header className="x-constraint flex h-16 items-center justify-between bg-white shadow-sm">
+      <Link href="/" className="flex items-center gap-3 shrink-0">
         <img
-          alt="Pet Profile Generator"
-          src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-          className="size-8"
+          alt="Profile Pal"
+          src="/logo-sq.jpg"
+          className="h-12 rounded-full"
         />
-        <span className="text-xl text-white">PetProfiler</span>
-      </div>
+        <span className="text-xl text-brand-purple font-brand">Profile Pal</span>
+      </Link>
       <TheNavBar />
     </header>
   );

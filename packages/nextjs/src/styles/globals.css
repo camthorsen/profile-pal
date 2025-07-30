@@ -1,1 +1,27 @@
 @import 'tailwindcss';
+
+@font-face {
+  font-family: 'Oldenburg';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/oldenburg/v23/fC1jPY5JYWzbywv7c4V6UQ.ttf) format('truetype');
+}
+
+@theme {
+  --color-brand-purple: #392943;
+  --color-brand-pink: #c15764;
+  --color-brand-pink-dark: #9a4650;
+  --color-brand-orange: #e4a046;
+  --color-brand-orange-light: #ffd296;
+  --font-family-brand: 'Oldenburg', serif;
+}
+
+@layer utilities {
+  .font-brand {
+    font-family: 'Oldenburg', serif !important;
+  }
+  .x-constraint {
+    @apply max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+}

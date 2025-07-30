@@ -18,6 +18,8 @@
   },
   "dependencies": {
     "@hono/node-server": "1.14.3",
+    "@williamthorsen/toolbelt.guards": "3.0.1",
+    "@williamthorsen/toolbelt.objects": "3.0.2",
     "hono": "4.7.11",
     "pet-profiler-api": "workspace:*"
   }

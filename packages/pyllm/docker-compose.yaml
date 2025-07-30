@@ -1,0 +1,8 @@
+services:
+  llm-service:
+    build: .
+    ports:
+      - "7862:7862"
+    restart: unless-stopped
+    volumes:
+      - ./models:/app/models

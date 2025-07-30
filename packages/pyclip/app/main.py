@@ -8,8 +8,8 @@ import io
 app = FastAPI()
 
 TAGS = [
-    "cat", "dog", "hamster", "calico", "fluffy",
-    "long-hair", "short-hair", "tuxedo", "persian", "golden retriever",
+    "cat", "dog", "hamster", "rabbit", "bird", "fish", "turtle", "snake", "lizard",
+    "long-hair", "short-hair", "medium-hair"
 ]
 
 model = None
