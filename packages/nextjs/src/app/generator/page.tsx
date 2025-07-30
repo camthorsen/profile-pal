@@ -6,9 +6,10 @@ import imageCompression from 'browser-image-compression';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import type { ClipScore } from 'pet-profiler-api';
-import { type ChangeEvent, type FormEvent, type ReactElement, useRef, useState } from 'react';
+import { type ChangeEvent, type ReactElement, useRef, useState } from 'react';
 
 import { Card } from '@/components/Card.tsx';
+import { Chip } from '@/components/Chip.tsx';
 import { CopyToClipboardButton } from '@/components/CopyToClipboardButton.tsx';
 import { DragDropInput } from '@/components/DragDropInput.tsx';
 import { Header } from '@/components/Header.tsx';
@@ -16,6 +17,7 @@ import { H1 } from '@/components/typography/H1.tsx';
 import { H2 } from '@/components/typography/H2.tsx';
 import { LoadingSpinner } from '@/components/LoadingSpinner.tsx';
 import { PrimaryButton } from '@/components/PrimaryButton.tsx';
+import { SecondaryButton } from '@/components/SecondaryButton.tsx';
 import { cn } from '@/utils/cn.ts';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
@@ -151,17 +153,12 @@ function AudioSection({
 
       {/* 2B: Record in-browser */}
       <div>
-        <button
+        <SecondaryButton
           onClick={onToggleRecording}
-          className={cn(
-            'px-4 py-2 rounded-full',
-            isRecording ? 'bg-red-500 text-white' : 'text-gray-900 hover:bg-neutral-100 border',
-            'hover:cursor-pointer',
-          )}
-        >
-          🔴
-          <span className="ml-2">{isRecording ? 'Stop recording' : 'Start recording'}</span>
-        </button>
+          icon="🔴"
+          text={isRecording ? 'Stop recording' : 'Start recording'}
+          className={cn(isRecording && 'bg-red-500 text-white border-red-500 hover:bg-red-600 hover:text-white')}
+        />
         <div className="mt-2">
           <ReactMic
             record={isRecording}
@@ -182,34 +179,43 @@ function ResultsSection({ responseData }: { responseData: ProfileResponse | null
   if (!responseData) return null;
 
   return (
-    <div className="mt-6 border-t pt-4 space-y-4">
-      <h2 className="text-xl font-semibold">Generated Tags:</h2>
-      <p>
-        Best tag: <span className="font-bold">{responseData.bestTag}</span>
-      </p>
-      <p>Raw scores:</p>
-      <ul className="list-disc list-inside">
-        {responseData.clipScores.map(({ label, score }) => (
-          <li key={label}>
-            {label} ({score})
-          </li>
-        ))}
-      </ul>
-
-      <h2 className="text-xl font-semibold">Transcribed Audio:</h2>
-      <div className="bg-gray-50 p-4 rounded-lg border">
-        <p className="text-gray-700 italic">"{responseData.transcript}"</p>
+    <div className="mt-8 border-t pt-6 space-y-6">
+      <div className="flex flex-col gap-3">
+        <h2 className="text-xl font-semibold">Generated Tags:</h2>
+        <div className="flex flex-wrap gap-2">
+          {responseData.clipScores.map(({ label }) => (
+            <Chip key={label} label={label} />
+          ))}
+        </div>
+        <p>Raw tag scores:</p>
+        <ul className="list-disc list-inside -mt-2">
+          {responseData.clipScores.map(({ label, score }) => (
+            <li key={label}>
+              {label} ({score})
+            </li>
+          ))}
+        </ul>
+      </div>
+      
+      <div className="flex flex-col gap-3">
+        <h2 className="text-xl font-semibold">Transcribed Audio:</h2>
+        <div className="px-4 border-l-2 border-neutral-300">
+          <p className="text-gray-700 italic">"{responseData.transcript}"</p>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Profile Summary:</h2>
-        <CopyToClipboardButton text={responseData.summary} buttonText="Copy Summary" successText="Summary Copied!" />
+      <div className="flex flex-col gap-3">
+        <h2 className="text-xl font-semibold">Generated Profile Summary:</h2>
+        <div className="bg-white rounded-lg shadow-md p-6 flex gap-4 prose">
+          {responseData.summary.split('\n\n').map((para, idx) => (
+            <p key={idx}>{para}</p>
+          ))}
+        </div>
+        <div className="flex">
+          <CopyToClipboardButton text={responseData.summary} buttonText="Copy Summary" successText="Copied!" />
+        </div>
       </div>
-      <div className="prose max-w-none">
-        {responseData.summary.split('\n\n').map((para, idx) => (
-          <p key={idx}>{para}</p>
-        ))}
-      </div>
+      
     </div>
   );
 }
