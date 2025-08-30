@@ -4,8 +4,18 @@ import { type ClipScore, getBestClipScore, getClipScoresFromImage } from 'pet-pr
 import { streamToTempFile } from '../../lib/stream-to-tempfile.ts';
 import { transcribeWithDockerWhisper } from '../audio/transcribe/transcribeWithDockerWhisper.js';
 import { summarizeWithDockerLLM } from '../text/summarize/summarizeWithDockerLLM.js';
+import { summarizeWithOpenAI } from '../text/summarize/summarizeWithOpenAi.js';
 
 const app = new Hono();
+
+const useHosted = process.env.USE_HOSTED_LLM === 'true';
+
+export async function summarizeHandler(transcript: string, animalType: string) {
+  if (useHosted) {
+    return summarizeWithOpenAI(transcript, animalType);
+  }
+  return summarizeWithDockerLLM(transcript, animalType);
+}
 
 app.post(async (context) => {
   const contentType = context.req.header('content-type');
@@ -34,7 +44,7 @@ app.post(async (context) => {
     const bestTag = getBestClipScore(clipScores).label;
 
     // Step 3: Generate summary using LLM with animal type context
-    const summary = await summarizeWithDockerLLM(transcript, bestTag);
+    const summary = await summarizeHandler(transcript, bestTag);
 
     return context.json({
       clipScores: clipScores,
