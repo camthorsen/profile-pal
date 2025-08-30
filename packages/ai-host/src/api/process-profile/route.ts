@@ -8,13 +8,15 @@ import { summarizeWithOpenAI } from '../text/summarize/summarizeWithOpenAi.js';
 
 const app = new Hono();
 
-const useHosted = process.env.USE_HOSTED_LLM === 'true';
-
 // updated signature: (transcript, labels?)
 export async function summarizeHandler(transcript: string, labels?: string[]) {
+  const useHosted = process.env.USE_HOSTED_LLM === 'true';
+  
   if (useHosted) {
+    console.log('🤖 Using OpenAI for text summarization');
     return summarizeWithOpenAI(transcript, labels);
   }
+  console.log('🐳 Using Docker LLM for text summarization');
   // FIXME: docker path needs to be updated (currently doesn't use labels)
   return summarizeWithDockerLLM(transcript, '');
 }
