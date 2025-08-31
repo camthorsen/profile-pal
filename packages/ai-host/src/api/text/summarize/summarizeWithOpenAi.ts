@@ -72,20 +72,38 @@ function coerceFacts(v: unknown): AnimalFacts {
 
   const rec: any = v; // using 'any' here avoids type assertions on every field
 
-  out.name = str(rec.name);
-  out.species = str(rec.species);
-  out.age = str(rec.age);
-  out.size = str(rec.size);
+  const name = str(rec.name);
+  if (name) out.name = name;
+  
+  const species = str(rec.species);
+  if (species) out.species = species;
+  
+  const age = str(rec.age);
+  if (age) out.age = age;
+  
+  const size = str(rec.size);
+  if (size) out.size = size;
 
   const coat = str(rec.coat_length);
   if (coat) out.coat_length = coat;
 
-  out.likes = arr(rec.likes);
-  out.dislikes = arr(rec.dislikes);
-  out.temperament = arr(rec.temperament);
-  out.medical = str(rec.medical);
-  out.adoption_notes = str(rec.adoption_notes);
-  out.red_flags = arr(rec.red_flags);
+  const likes = arr(rec.likes);
+  if (likes) out.likes = likes;
+  
+  const dislikes = arr(rec.dislikes);
+  if (dislikes) out.dislikes = dislikes;
+  
+  const temperament = arr(rec.temperament);
+  if (temperament) out.temperament = temperament;
+  
+  const medical = str(rec.medical);
+  if (medical) out.medical = medical;
+  
+  const adoption_notes = str(rec.adoption_notes);
+  if (adoption_notes) out.adoption_notes = adoption_notes;
+  
+  const red_flags = arr(rec.red_flags);
+  if (red_flags) out.red_flags = red_flags;
 
   return out;
 }
@@ -141,7 +159,10 @@ function deriveSpeciesAndCoat(labels?: string[]): { species?: string; coat_lengt
     if (!coat && l in COAT_ALIASES) coat = COAT_ALIASES[l];
     if (species && coat) break;
   }
-  return { species, coat_length: coat };
+  const result: { species?: string; coat_length?: 'short' | 'medium' | 'long' } = {};
+  if (species) result.species = species;
+  if (coat) result.coat_length = coat;
+  return result;
 }
 
 /* ───────────────────────── Structured JSON schema ───────────────────────── */
@@ -338,7 +359,7 @@ async function composeProfile(facts: AnimalFacts, transcript: string, labels?: s
     parts.unshift(`IMAGE_LABELS: ${labels.join(', ')}`);
   }
 
-  const res = await createWithContinuation({
+  const res: unknown = await createWithContinuation({
     model: 'gpt-5-mini',
     input: [
       { role: 'system', content: system },
@@ -351,7 +372,7 @@ async function composeProfile(facts: AnimalFacts, transcript: string, labels?: s
   });
 
   if (DEBUG) {
-    const usage = res && typeof res === 'object' && 'usage' in res ? (res as any).usage : undefined;
+    const usage: unknown = res && typeof res === 'object' && 'usage' in res ? (res as any).usage : undefined;
     console.log('[OpenAI] Stage B status:', (res as any)?.status, 'usage:', usage);
   }
 

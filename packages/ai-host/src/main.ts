@@ -9,7 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // FIXME: REMOVE THIS log
 console.log(
-  `[ai-host] env loaded. USE_HOSTED_LLM=${process.env.USE_HOSTED_LLM} OPENAI_API_KEY=…${(process.env.OPENAI_API_KEY ?? '').slice(-4)}`
+  `[ai-host] env loaded. OPENAI_API_KEY=…${(process.env.OPENAI_API_KEY ?? '').slice(-4)}`
 );
 
 

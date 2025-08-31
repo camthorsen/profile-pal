@@ -3,22 +3,14 @@ import { type ClipScore, getClipScoresFromImage } from 'pet-profiler-api';
 
 import { streamToTempFile } from '../../lib/stream-to-tempfile.ts';
 import { transcribeWithDockerWhisper } from '../audio/transcribe/transcribeWithDockerWhisper.js';
-import { summarizeWithDockerLLM } from '../text/summarize/summarizeWithDockerLLM.js';
 import { summarizeWithOpenAI } from '../text/summarize/summarizeWithOpenAi.js';
 
 const app = new Hono();
 
 // updated signature: (transcript, labels?)
 export async function summarizeHandler(transcript: string, labels?: string[]) {
-  const useHosted = process.env.USE_HOSTED_LLM === 'true';
-  
-  if (useHosted) {
-    console.log('🤖 Using OpenAI for text summarization');
-    return summarizeWithOpenAI(transcript, labels);
-  }
-  console.log('🐳 Using Docker LLM for text summarization');
-  // FIXME: docker path needs to be updated (currently doesn't use labels)
-  return summarizeWithDockerLLM(transcript, '');
+  console.log('🤖 Using OpenAI for text summarization');
+  return summarizeWithOpenAI(transcript, labels);
 }
 
 app.post(async (context) => {
