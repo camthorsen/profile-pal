@@ -74,13 +74,13 @@ function coerceFacts(v: unknown): AnimalFacts {
 
   const name = str(rec.name);
   if (name) out.name = name;
-  
+
   const species = str(rec.species);
   if (species) out.species = species;
-  
+
   const age = str(rec.age);
   if (age) out.age = age;
-  
+
   const size = str(rec.size);
   if (size) out.size = size;
 
@@ -89,19 +89,19 @@ function coerceFacts(v: unknown): AnimalFacts {
 
   const likes = arr(rec.likes);
   if (likes) out.likes = likes;
-  
+
   const dislikes = arr(rec.dislikes);
   if (dislikes) out.dislikes = dislikes;
-  
+
   const temperament = arr(rec.temperament);
   if (temperament) out.temperament = temperament;
-  
+
   const medical = str(rec.medical);
   if (medical) out.medical = medical;
-  
+
   const adoption_notes = str(rec.adoption_notes);
   if (adoption_notes) out.adoption_notes = adoption_notes;
-  
+
   const red_flags = arr(rec.red_flags);
   if (red_flags) out.red_flags = red_flags;
 
@@ -204,6 +204,19 @@ const ANIMAL_FACTS_SCHEMA = {
 };
 
 /* ─────────────────────── Output readers + utilities ─────────────────────── */
+
+/** Build AI directive based on selected language. */
+type GenerateOptions = { outputLanguage?: 'auto' | string };
+
+function buildLanguageDirective(options?: GenerateOptions): string {
+  if (options?.outputLanguage === 'auto') {
+    return 'Write the entire bio in the dominant language of SOURCE_TRANSCRIPT.';
+  }
+  if (options?.outputLanguage) {
+    return `Write the entire bio in ${options.outputLanguage}.`;
+  }
+  return 'Write the entire bio in English.';
+}
 
 /** Collect all assistant-visible text from a Responses payload. */
 function collectText(res: any): string {
@@ -344,7 +357,14 @@ async function extractFacts(transcript: string, labels?: string[]): Promise<Anim
  * - Lower reasoning effort + low verbosity to avoid token starvation.
  * - Continuation logic ensures text completes even if the first hop truncates.
  */
-async function composeProfile(facts: AnimalFacts, transcript: string, labels?: string[]): Promise<string> {
+async function composeProfile(
+  facts: AnimalFacts,
+  transcript: string,
+  labels?: string[],
+  options?: { outputLanguage?: 'auto' | string },
+): Promise<string> {
+  const languageDirective = buildLanguageDirective(options);
+
   const system = [
     'You write short, empathetic adoption bios for shelters.',
     'Voice: warm, professional, friendly. Length: 120–180 words.',
@@ -352,6 +372,7 @@ async function composeProfile(facts: AnimalFacts, transcript: string, labels?: s
     'If FACTS_JSON is sparse, you may carefully incorporate details from SOURCE_TRANSCRIPT, but never contradict it.',
     'Use IMAGE_LABELS only as secondary hints. Avoid repetition; vary sentence openings.',
     'Conclude with a friendly call to action.',
+    languageDirective,
   ].join(' ');
 
   const parts: string[] = [`FACTS_JSON: ${JSON.stringify(facts)}`, 'SOURCE_TRANSCRIPT (verbatim):', transcript];
@@ -391,7 +412,11 @@ async function composeProfile(facts: AnimalFacts, transcript: string, labels?: s
  * Generates a polished bio. If extractor omits deterministic hints (species/coat)
  * that are clear from labels, we merge them before writing.
  */
-export async function summarizeWithOpenAI(transcript: string, labels?: string[]): Promise<string> {
+export async function summarizeWithOpenAI(
+  transcript: string,
+  labels?: string[],
+  options?: { outputLanguage?: 'auto' | string },
+): Promise<string> {
   // Stage A: extract facts
   let facts = await extractFacts(transcript, labels);
 
@@ -403,17 +428,24 @@ export async function summarizeWithOpenAI(transcript: string, labels?: string[])
   if (DEBUG) console.log('[OpenAI] summarize facts:', JSON.stringify(facts));
 
   // Stage B: compose final profile
-  let profile = await composeProfile(facts, transcript, labels);
+  let profile = await composeProfile(facts, transcript, labels, options);
 
   // Safety net: if somehow empty, fall back to single-pass generation.
   if (!profile) {
+    const languageDirective = buildLanguageDirective(options);
+
     const fallback = await createWithContinuation({
       model: 'gpt-5-mini',
       input: [
         {
           role: 'system',
-          content:
-            'Write a 120–180 word adoption bio. Use only user-provided details. Avoid repetition. End with a friendly call to action.',
+          content: [
+            'Write a 120–180 word adoption bio.',
+            'Use only user-provided details.',
+            'Avoid repetition.',
+            'End with a friendly call to action.',
+            languageDirective,
+          ].join(' '),
         },
         {
           role: 'user',
