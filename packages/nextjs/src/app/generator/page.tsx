@@ -13,11 +13,11 @@ import { Chip } from '@/components/Chip.tsx';
 import { CopyToClipboardButton } from '@/components/CopyToClipboardButton.tsx';
 import { DragDropInput } from '@/components/DragDropInput.tsx';
 import { Header } from '@/components/Header.tsx';
-import { H1 } from '@/components/typography/H1.tsx';
-import { H2 } from '@/components/typography/H2.tsx';
 import { LoadingSpinner } from '@/components/LoadingSpinner.tsx';
 import { PrimaryButton } from '@/components/PrimaryButton.tsx';
 import { SecondaryButton } from '@/components/SecondaryButton.tsx';
+import { H1 } from '@/components/typography/H1.tsx';
+import { H2 } from '@/components/typography/H2.tsx';
 import { cn } from '@/utils/cn.ts';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
@@ -220,6 +220,43 @@ function ResultsSection({ responseData }: { responseData: ProfileResponse | null
   );
 }
 
+function LanguageSelector({
+  selectedLanguage,
+  onLanguageChange,
+}: {
+  selectedLanguage: string;
+  onLanguageChange: (language: string) => void;
+}): ReactElement {
+  const languages = [
+    { value: 'English', label: 'English' },
+    { value: 'French', label: 'Français' },
+    { value: 'Spanish', label: 'Español' },
+  ];
+
+  return (
+    <div className="space-y-2">
+      <label htmlFor="language-select" className="block text-sm font-medium text-gray-700">
+        Output Language
+      </label>
+      <select
+        id="language-select"
+        value={selectedLanguage}
+        onChange={(e) => onLanguageChange(e.target.value)}
+        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-pink focus:border-brand-pink sm:text-sm"
+      >
+        {languages.map((lang) => (
+          <option key={lang.value} value={lang.value}>
+            {lang.label}
+          </option>
+        ))}
+      </select>
+      <p className="text-xs text-gray-500">
+        Select the language for the generated profile summary
+      </p>
+    </div>
+  );
+}
+
 export default function GeneratorPage(): ReactElement {
   // —— State for image upload/compression —— //
   const [rawImageFile, setRawImageFile] = useState<File | undefined>();
@@ -233,6 +270,9 @@ export default function GeneratorPage(): ReactElement {
 
   // —— State for server response —— //
   const [responseData, setResponseData] = useState<ProfileResponse | null>(null);
+
+  // —— State for language selection —— //
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
 
   // Ref for resetting file input TODO: Remove if not needed
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -315,10 +355,11 @@ export default function GeneratorPage(): ReactElement {
       return;
     }
 
-    // Build FormData: keys must match what our API will expect ("image" & "audio")
+    // Build FormData: keys must match what our API will expect ("image", "audio", & "language")
     const formData = new FormData();
     formData.append('image', compressedImage);
     formData.append('audio', audioFile);
+    formData.append('language', selectedLanguage);
 
     try {
       // Use the Fetch API to POST to /api/process-profile
@@ -403,6 +444,17 @@ export default function GeneratorPage(): ReactElement {
               onToggleRecording={toggleRecording}
               onStop={onStop}
               onData={onData}
+            />
+          </Card>
+
+          <Card
+            title="Language Selection"
+            stepNumber={3}
+            description="Choose the language for the generated profile summary."
+          >
+            <LanguageSelector
+              selectedLanguage={selectedLanguage}
+              onLanguageChange={setSelectedLanguage}
             />
           </Card>
 
