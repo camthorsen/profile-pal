@@ -1,11 +1,17 @@
 import { Hono } from 'hono';
-import { type ClipScore, getBestClipScore, getClipScoresFromImage } from 'pet-profiler-api';
+import { type ClipScore, getClipScoresFromImage } from 'pet-profiler-api';
 
 import { streamToTempFile } from '../../lib/stream-to-tempfile.ts';
 import { transcribeWithDockerWhisper } from '../audio/transcribe/transcribeWithDockerWhisper.js';
-import { summarizeWithDockerLLM } from '../text/summarize/summarizeWithDockerLLM.js';
+import { summarizeWithOpenAI } from '../text/summarize/summarizeWithOpenAi.js';
 
 const app = new Hono();
+
+// updated signature: (transcript, labels?)
+export async function summarizeHandler(transcript: string, labels?: string[]) {
+  console.log('🤖 Using OpenAI for text summarization');
+  return summarizeWithOpenAI(transcript, labels);
+}
 
 app.post(async (context) => {
   const contentType = context.req.header('content-type');
@@ -25,22 +31,22 @@ app.post(async (context) => {
     const imagePath = await streamToTempFile(imageFile.stream(), '.jpg');
 
     // Step 1: Process image and audio in parallel
-    const [clipScores, transcript]: [clipScores: ClipScore[], transcript: string] = await Promise.all([
+    const [clipScores, transcript]: [ClipScore[], string] = await Promise.all([
       getClipScoresFromImage(imagePath),
       transcribeWithDockerWhisper(audioFile),
     ]);
 
-    // Step 2: Get the best tag (animal type) for context
-    const bestTag = getBestClipScore(clipScores).label;
+    // Step 2: Collect labels for LLM grounding
+    const labels = clipScores.map(({ label }) => label);
 
-    // Step 3: Generate summary using LLM with animal type context
-    const summary = await summarizeWithDockerLLM(transcript, bestTag);
+    // Step 3: Generate summary using LLM
+    const summary = await summarizeHandler(transcript, labels);
 
     return context.json({
-      clipScores: clipScores,
-      bestTag, // Use the bestTag variable we already computed
-      transcript, // Add transcript to response
-      summary, // Use LLM-generated summary
+      clipScores,
+      labels, // helpful for the UI
+      transcript, // for debugging/preview
+      summary, // final bio
     });
   } catch (error: unknown) {
     console.error('❌ Failed to process profile:', error);
