@@ -8,12 +8,12 @@ import Image from 'next/image';
 import type { ClipScore } from 'pet-profiler-api';
 import { type ChangeEvent, type ReactElement, useRef, useState } from 'react';
 
-import { Card } from '@/components/Card.tsx';
 import { Chip } from '@/components/Chip.tsx';
 import { CopyToClipboardButton } from '@/components/CopyToClipboardButton.tsx';
 import { DragDropInput } from '@/components/DragDropInput.tsx';
 import { Header } from '@/components/Header.tsx';
 import { SuccessIcon, UploadIcon } from '@/components/icons/index.ts';
+import { DisclosurePanelComponent } from '@/components/DisclosurePanel.tsx';
 import { LanguageSelector } from '@/components/LanguageSelector.tsx';
 import { LoadingSpinner } from '@/components/LoadingSpinner.tsx';
 import { PrimaryButton } from '@/components/PrimaryButton.tsx';
@@ -212,6 +212,11 @@ export default function GeneratorPage(): ReactElement {
   // —— State for language selection —— //
   const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
 
+  // —— State for disclosure panels —— //
+  const [isImageUploadOpen, setIsImageUploadOpen] = useState<boolean>(true);
+  const [isAudioDescriptionOpen, setIsAudioDescriptionOpen] = useState<boolean>(true);
+  const [isLanguageSelectionOpen, setIsLanguageSelectionOpen] = useState<boolean>(true);
+
   // Ref for resetting file input TODO: Remove if not needed
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -314,6 +319,11 @@ export default function GeneratorPage(): ReactElement {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const profileResponse: ProfileResponse = await resp.json();
       setResponseData(profileResponse);
+      
+      // Close all disclosure panels after successful generation
+      setIsImageUploadOpen(false);
+      setIsAudioDescriptionOpen(false);
+      setIsLanguageSelectionOpen(false);
     } catch (error) {
       console.error('Error calling /api/process-profile:', error);
       alert('Something went wrong generating the profile. Check console for details.');
@@ -357,10 +367,13 @@ export default function GeneratorPage(): ReactElement {
             </p>
           </div>
 
-          <Card
+          <DisclosurePanelComponent
             title="Image Upload"
             stepNumber={1}
             description="Upload a well-lit image of the animal you want to create a profile for."
+            isOpen={isImageUploadOpen}
+            onToggle={setIsImageUploadOpen}
+            className="bg-white rounded-lg shadow-md p-6 mb-6"
           >
             <ImageUploadSection
               rawImageFile={rawImageFile}
@@ -368,12 +381,15 @@ export default function GeneratorPage(): ReactElement {
               fileInputRef={fileInputRef}
               onImageChange={handleImageChange}
             />
-          </Card>
+          </DisclosurePanelComponent>
 
-          <Card
+          <DisclosurePanelComponent
             title="Audio Description"
             stepNumber={2}
             description="Record or provide an audio clip describing the animal. For faster results, keep the clip short (15-30 seconds)."
+            isOpen={isAudioDescriptionOpen}
+            onToggle={setIsAudioDescriptionOpen}
+            className="bg-white rounded-lg shadow-md p-6 mb-6"
           >
             <AudioSection
               audioFile={audioFile}
@@ -383,18 +399,21 @@ export default function GeneratorPage(): ReactElement {
               onStop={onStop}
               onData={onData}
             />
-          </Card>
+          </DisclosurePanelComponent>
 
-          <Card
+          <DisclosurePanelComponent
             title="Language Selection"
             stepNumber={3}
-            description="Choose the language you would like profile summary to be written in."
+            description="Choose the language for the generated profile summary."
+            isOpen={isLanguageSelectionOpen}
+            onToggle={setIsLanguageSelectionOpen}
+            className="bg-white rounded-lg shadow-md p-6 mb-6"
           >
             <LanguageSelector
               selectedLanguage={selectedLanguage}
               onLanguageChange={setSelectedLanguage}
             />
-          </Card>
+          </DisclosurePanelComponent>
 
           {/* —— SUBMIT BUTTON —— */}
           <div className="flex justify-center">
