@@ -2,7 +2,7 @@ import { type ReactElement } from 'react';
 
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 
-import { ChevronIcon } from './icons';
+import { ChevronDownIcon, ChevronUpIcon } from './icons/index.ts';
 
 export interface DisclosurePanelProps {
   title: string;
@@ -47,12 +47,12 @@ export function DisclosurePanelComponent({
                 </div>
                 
                 {/* Chevron Icon */}
-                <div className="flex-shrink-0">
-                  <ChevronIcon 
-                    className={`transform transition-transform duration-200 ${
-                      open ? 'rotate-180' : 'rotate-0'
-                    }`}
-                  />
+                <div className="flex-shrink-0 w-6 h-6 text-gray-500">
+                  {open ? (
+                    <ChevronUpIcon className="w-full h-full transition-opacity duration-200" />
+                  ) : (
+                    <ChevronDownIcon className="w-full h-full transition-opacity duration-200" />
+                  )}
                 </div>
               </div>
             </DisclosureButton>
