@@ -1,6 +1,5 @@
-import { type ReactElement } from 'react';
-
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
+import { type ReactElement } from 'react';
 
 import { ChevronDownIcon, ChevronUpIcon } from './icons/index.ts';
 
@@ -12,6 +11,7 @@ export interface DisclosurePanelProps {
   isOpen?: boolean;
   onToggle?: (isOpen: boolean) => void;
   className?: string;
+  key?: string | number;
 }
 
 export function DisclosurePanelComponent({
@@ -22,9 +22,10 @@ export function DisclosurePanelComponent({
   isOpen = true,
   onToggle,
   className,
+  key,
 }: DisclosurePanelProps): ReactElement {
   return (
-    <Disclosure as="div" className={className} defaultOpen={isOpen}>
+    <Disclosure as="div" className={className} defaultOpen={isOpen} key={key}>
       {({ open }) => {
         // Call onToggle when the state changes
         if (onToggle && open !== isOpen) {

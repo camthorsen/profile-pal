@@ -10,10 +10,10 @@ import { type ChangeEvent, type ReactElement, useRef, useState } from 'react';
 
 import { Chip } from '@/components/Chip.tsx';
 import { CopyToClipboardButton } from '@/components/CopyToClipboardButton.tsx';
+import { DisclosurePanelComponent } from '@/components/DisclosurePanel.tsx';
 import { DragDropInput } from '@/components/DragDropInput.tsx';
 import { Header } from '@/components/Header.tsx';
 import { SuccessIcon, UploadIcon } from '@/components/icons/index.ts';
-import { DisclosurePanelComponent } from '@/components/DisclosurePanel.tsx';
 import { LanguageSelector } from '@/components/LanguageSelector.tsx';
 import { LoadingSpinner } from '@/components/LoadingSpinner.tsx';
 import { PrimaryButton } from '@/components/PrimaryButton.tsx';
@@ -216,6 +216,7 @@ export default function GeneratorPage(): ReactElement {
   const [isImageUploadOpen, setIsImageUploadOpen] = useState<boolean>(true);
   const [isAudioDescriptionOpen, setIsAudioDescriptionOpen] = useState<boolean>(true);
   const [isLanguageSelectionOpen, setIsLanguageSelectionOpen] = useState<boolean>(true);
+  const [disclosureKey, setDisclosureKey] = useState<number>(0);
 
   // Ref for resetting file input TODO: Remove if not needed
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -291,6 +292,9 @@ export default function GeneratorPage(): ReactElement {
   async function handleSubmit() {
     setIsGenerating(true);
     setResponseData(null);
+    
+    // Close all disclosure panels when generation starts
+    setDisclosureKey(prev => prev + 1);
 
     if (!compressedImage || !audioFile) {
       alert('Please provide both an image and an audio clip before submitting.');
@@ -319,11 +323,6 @@ export default function GeneratorPage(): ReactElement {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const profileResponse: ProfileResponse = await resp.json();
       setResponseData(profileResponse);
-      
-      // Close all disclosure panels after successful generation
-      setIsImageUploadOpen(false);
-      setIsAudioDescriptionOpen(false);
-      setIsLanguageSelectionOpen(false);
     } catch (error) {
       console.error('Error calling /api/process-profile:', error);
       alert('Something went wrong generating the profile. Check console for details.');
@@ -371,9 +370,10 @@ export default function GeneratorPage(): ReactElement {
             title="Image Upload"
             stepNumber={1}
             description="Upload a well-lit image of the animal you want to create a profile for."
-            isOpen={isImageUploadOpen}
+            isOpen={disclosureKey === 0 ? isImageUploadOpen : false}
             onToggle={setIsImageUploadOpen}
             className="bg-white rounded-lg shadow-md p-6 mb-6"
+            key={`image-${disclosureKey}`}
           >
             <ImageUploadSection
               rawImageFile={rawImageFile}
@@ -387,9 +387,10 @@ export default function GeneratorPage(): ReactElement {
             title="Audio Description"
             stepNumber={2}
             description="Record or provide an audio clip describing the animal. For faster results, keep the clip short (15-30 seconds)."
-            isOpen={isAudioDescriptionOpen}
+            isOpen={disclosureKey === 0 ? isAudioDescriptionOpen : false}
             onToggle={setIsAudioDescriptionOpen}
             className="bg-white rounded-lg shadow-md p-6 mb-6"
+            key={`audio-${disclosureKey}`}
           >
             <AudioSection
               audioFile={audioFile}
@@ -405,9 +406,10 @@ export default function GeneratorPage(): ReactElement {
             title="Language Selection"
             stepNumber={3}
             description="Choose the language for the generated profile summary."
-            isOpen={isLanguageSelectionOpen}
+            isOpen={disclosureKey === 0 ? isLanguageSelectionOpen : false}
             onToggle={setIsLanguageSelectionOpen}
             className="bg-white rounded-lg shadow-md p-6 mb-6"
+            key={`language-${disclosureKey}`}
           >
             <LanguageSelector
               selectedLanguage={selectedLanguage}
