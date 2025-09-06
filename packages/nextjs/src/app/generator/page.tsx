@@ -2,6 +2,7 @@
 
 'use client'; // ← This file uses React hooks, so it must run in the browser
 
+import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
 import imageCompression from 'browser-image-compression';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
@@ -231,25 +232,61 @@ function LanguageSelector({
     { value: 'English', label: 'English' },
     { value: 'French', label: 'Français' },
     { value: 'Spanish', label: 'Español' },
-  ];
+  ] as const;
+
+  const selectedLang = languages.find(lang => lang.value === selectedLanguage) ?? languages[0];
+
+  const chevronIcon = (
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+    </svg>
+  );
+
+  const checkIcon = (
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    </svg>
+  );
 
   return (
     <div className="space-y-2">
-      <label htmlFor="language-select" className="block text-sm font-medium text-gray-700">
-        Output Language
-      </label>
-      <select
-        id="language-select"
-        value={selectedLanguage}
-        onChange={(e) => onLanguageChange(e.target.value)}
-        className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-pink focus:border-brand-pink sm:text-sm"
-      >
-        {languages.map((lang) => (
-          <option key={lang.value} value={lang.value}>
-            {lang.label}
-          </option>
-        ))}
-      </select>
+      <Listbox value={selectedLang} onChange={(lang) => onLanguageChange(lang.value)}>
+        <Label className="block text-sm font-medium text-gray-700">
+          Output Language
+        </Label>
+        <div className="relative mt-2">
+          <ListboxButton className="grid w-full cursor-default grid-cols-1 rounded-md bg-white py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-pink sm:text-sm">
+            <span className="col-start-1 row-start-1 truncate pr-6">{selectedLang!.label}</span>
+            <span
+              aria-hidden="true"
+              className="col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-500 sm:size-4"
+            >
+              {chevronIcon}
+            </span>
+          </ListboxButton>
+
+          <ListboxOptions
+            transition
+            className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg outline-1 outline-black/5 data-leave:transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0 sm:text-sm"
+          >
+            {languages.map((lang) => (
+              <ListboxOption
+                key={lang.value}
+                value={lang}
+                className="group relative cursor-default py-2 pr-9 pl-3 text-gray-900 select-none data-focus:bg-brand-pink data-focus:text-white data-focus:outline-hidden"
+              >
+                <span className="block truncate font-normal group-data-selected:font-semibold">{lang.label}</span>
+
+                <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-brand-pink group-not-data-selected:hidden group-data-focus:text-white">
+                  <span aria-hidden="true" className="size-5">
+                    {checkIcon}
+                  </span>
+                </span>
+              </ListboxOption>
+            ))}
+          </ListboxOptions>
+        </div>
+      </Listbox>
       <p className="text-xs text-gray-500">
         Select the language for the generated profile summary
       </p>
@@ -450,7 +487,7 @@ export default function GeneratorPage(): ReactElement {
           <Card
             title="Language Selection"
             stepNumber={3}
-            description="Choose the language for the generated profile summary."
+            description="Choose the language you would like profile summary to be written in."
           >
             <LanguageSelector
               selectedLanguage={selectedLanguage}
