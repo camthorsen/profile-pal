@@ -14,6 +14,7 @@ import { Chip } from '@/components/Chip.tsx';
 import { CopyToClipboardButton } from '@/components/CopyToClipboardButton.tsx';
 import { DragDropInput } from '@/components/DragDropInput.tsx';
 import { Header } from '@/components/Header.tsx';
+import { CheckIcon, ChevronIcon, SuccessIcon, UploadIcon } from '@/components/icons/index.ts';
 import { LoadingSpinner } from '@/components/LoadingSpinner.tsx';
 import { PrimaryButton } from '@/components/PrimaryButton.tsx';
 import { SecondaryButton } from '@/components/SecondaryButton.tsx';
@@ -43,22 +44,8 @@ function ImageUploadSection({
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   onImageChange: (e: ChangeEvent<HTMLInputElement>) => Promise<void>;
 }): ReactElement {
-  const uploadIcon = (
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-      />
-    </svg>
-  );
-
-  const successIcon = (
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-    </svg>
-  );
+  const uploadIcon = <UploadIcon />;
+  const successIcon = <SuccessIcon />;
 
   return (
     <div>
@@ -113,22 +100,8 @@ function AudioSection({
   onStop: (recordedData: { blob: Blob }) => void;
   onData: (recordedChunk: Blob) => void;
 }): ReactElement {
-  const uploadIcon = (
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
-      />
-    </svg>
-  );
-
-  const successIcon = (
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-    </svg>
-  );
+  const uploadIcon = <UploadIcon />;
+  const successIcon = <SuccessIcon />;
 
   return (
     <div className="space-y-4">
@@ -236,18 +209,6 @@ function LanguageSelector({
 
   const selectedLang = languages.find(lang => lang.value === selectedLanguage) ?? languages[0];
 
-  const chevronIcon = (
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-    </svg>
-  );
-
-  const checkIcon = (
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-    </svg>
-  );
-
   return (
     <div className="space-y-2">
       <Listbox value={selectedLang} onChange={(lang) => onLanguageChange(lang.value)}>
@@ -256,12 +217,12 @@ function LanguageSelector({
         </Label>
         <div className="relative mt-2">
           <ListboxButton className="grid w-full cursor-default grid-cols-1 rounded-md bg-white py-1.5 pr-2 pl-3 text-left text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-pink sm:text-sm">
-            <span className="col-start-1 row-start-1 truncate pr-6">{selectedLang!.label}</span>
+            <span className="col-start-1 row-start-1 truncate pr-6">{selectedLang.label}</span>
             <span
               aria-hidden="true"
               className="col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-500 sm:size-4"
             >
-              {chevronIcon}
+              <ChevronIcon />
             </span>
           </ListboxButton>
 
@@ -279,7 +240,7 @@ function LanguageSelector({
 
                 <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-brand-pink group-not-data-selected:hidden group-data-focus:text-white">
                   <span aria-hidden="true" className="size-5">
-                    {checkIcon}
+                    <CheckIcon />
                   </span>
                 </span>
               </ListboxOption>
