@@ -4,3 +4,4 @@ export { ChevronIcon } from './ChevronIcon.tsx';
 export { ChevronUpIcon } from './ChevronUpIcon.tsx';
 export { ChevronDownIcon } from './ChevronDownIcon.tsx';
 export { CheckIcon } from './CheckIcon.tsx';
+export { ResetIcon } from './ResetIcon.tsx';

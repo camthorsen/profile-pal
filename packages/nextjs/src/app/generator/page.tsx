@@ -13,7 +13,7 @@ import { CopyToClipboardButton } from '@/components/CopyToClipboardButton.tsx';
 import { DisclosurePanelComponent } from '@/components/DisclosurePanel.tsx';
 import { DragDropInput } from '@/components/DragDropInput.tsx';
 import { Header } from '@/components/Header.tsx';
-import { SuccessIcon, UploadIcon } from '@/components/icons/index.ts';
+import { SuccessIcon, UploadIcon, ResetIcon } from '@/components/icons/index.ts';
 import { LanguageSelector } from '@/components/LanguageSelector.tsx';
 import { LoadingSpinner } from '@/components/LoadingSpinner.tsx';
 import { PrimaryButton } from '@/components/PrimaryButton.tsx';
@@ -207,7 +207,7 @@ function ResultsSection({
 }
 
 
-export default function GeneratorPage(): ReactElement {
+function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement {
   // —— State for image upload/compression —— //
   const [rawImageFile, setRawImageFile] = useState<File | undefined>();
   const [compressedImage, setCompressedImage] = useState<File | undefined>();
@@ -375,7 +375,7 @@ export default function GeneratorPage(): ReactElement {
         {/* Form upload section */}
         <div className="md:col-span-2 space-y-8">
           <div className="flex flex-col gap-2">
-            <H1>Animal Adoption Profile Demo</H1>
+            <H1>Create a custom profile bio for your pet</H1>
             <p className="text-gray-600 mb-4">
               This is a demo of the animal adoption profile generator. It uses a simple image and audio to generate a
               profile.
@@ -434,7 +434,7 @@ export default function GeneratorPage(): ReactElement {
           </DisclosurePanelComponent>
 
           {/* —— SUBMIT BUTTON —— */}
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-4">
             <PrimaryButton
               onClick={handleSubmit}
               disabled={!canGenerate}
@@ -442,6 +442,15 @@ export default function GeneratorPage(): ReactElement {
               text={isGenerating ? 'Generating...' : 'Generate profile'}
               className={cn(isGenerating && 'bg-brand-pink-dark cursor-default')}
             />
+
+            <SecondaryButton
+                // Clicking Reset causes the keyed remount → clears all internal state
+                onClick={onReset}
+                text="Reset"
+                icon={<ResetIcon />}
+                disabled={isGenerating} // avoid mid-request resets
+                className="border-gray-300"
+              />
           </div>
 
           {isGenerating && <div className="mt-6 border-t pt-4 space-y-4">Generating profile ...</div>}
@@ -454,5 +463,21 @@ export default function GeneratorPage(): ReactElement {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function GeneratorPage(): ReactElement {
+  // NOTE: Need to keep this state here to ensure the inner component can be blown away and rebuilt
+  const [pageKey, setPageKey] = useState<number>(0);
+
+  return (
+    // Changing `key` forces a full remount of everything inside (resets form without need to reload page)
+    <GeneratorPageInner
+      key={pageKey}
+      onReset={() => {
+        // Incrementing this value remounts `GeneratorPageInner` and clears all its state.
+        setPageKey((k) => k + 1);
+      }}
+    />
   );
 }
