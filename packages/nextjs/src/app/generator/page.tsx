@@ -349,7 +349,7 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
   const canGenerate = !!(compressedImage && audioFile);
 
   return (
-    <div className="flex flex-col bg-neutral-100 min-h-screen">
+    <div className="flex flex-col justify-center items-center bg-neutral-100 min-h-screen">
       <Header />
       <div className="grid md:grid-cols-3 x-constraint gap-8 py-12">
         {/* Tips card */}
