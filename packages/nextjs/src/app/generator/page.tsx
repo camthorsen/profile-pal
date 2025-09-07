@@ -8,13 +8,14 @@ import Image from 'next/image';
 import type { ClipScore } from 'pet-profiler-api';
 import { type ChangeEvent, type ReactElement, useRef, useState } from 'react';
 
+import { Card } from '@/components/Card';
 import { Chip } from '@/components/Chip.tsx';
 import { CopyToClipboardButton } from '@/components/CopyToClipboardButton.tsx';
 import { DisclosurePanelComponent } from '@/components/DisclosurePanel.tsx';
 import { DragDropInput } from '@/components/DragDropInput.tsx';
-import { Header } from '@/components/Header.tsx';
 import { Footer } from '@/components/Footer.tsx';
-import { SuccessIcon, UploadIcon, ResetIcon } from '@/components/icons/index.ts';
+import { Header } from '@/components/Header.tsx';
+import { ResetIcon,SuccessIcon, UploadIcon } from '@/components/icons/index.ts';
 import { LanguageSelector } from '@/components/LanguageSelector.tsx';
 import { LoadingSpinner } from '@/components/LoadingSpinner.tsx';
 import { PrimaryButton } from '@/components/PrimaryButton.tsx';
@@ -22,7 +23,6 @@ import { SecondaryButton } from '@/components/SecondaryButton.tsx';
 import { H1 } from '@/components/typography/H1.tsx';
 import { H2 } from '@/components/typography/H2.tsx';
 import { cn } from '@/utils/cn.ts';
-import { Card } from '@/components/Card';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
   ssr: false,
@@ -352,29 +352,32 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
   return (
     <div className="flex flex-col justify-center items-center bg-neutral-100 min-h-screen">
       <Header />
-      <div className="flex-1 grid md:grid-cols-3 x-constraint gap-8 py-12">
-        {/* Tips card */}
-        <div className="rounded-lg shadow-md flex flex-col bg-brand-orange p-10">
-          <H2 className="mb-2">Audio Recording Tips</H2>
-          <p className="mb-4">Focus on the facts and briefly mention the following:</p>
-          <ul className="list-disc list-outside px-6">
-            <li>
-              <strong>Age</strong>, <strong>breed</strong>, and <strong>size</strong> of the animal
-            </li>
-            <li>
-              Spay/neuter status, health conditions, and <strong>special needs</strong> (e.g., only cat in the house)
-            </li>
-            <li>
-              <strong>Rescue circumstances</strong> (e.g., owner surrendered, rescued from a hoarding situation, etc.)
-            </li>
-            <li>
-              <strong>Distinct traits</strong>, behavioural characteristics (e.g., loves to play fetch, loves to cuddle)
-            </li>
-          </ul>
-        </div>
+      <div className="flex-1 x-constraint py-12">
+        <div className="flex gap-8">
+          {/* Tips card - sticky sidebar */}
+          <div className="hidden md:block w-80 flex-shrink-0">
+            <div className="sticky top-8 rounded-lg shadow-md flex flex-col bg-brand-orange p-6">
+              <H2 className="mb-2">Audio Recording Tips</H2>
+              <p className="mb-4">Focus on the facts and briefly mention the following:</p>
+              <ul className="list-disc list-outside px-6">
+                <li>
+                  <strong>Age</strong>, <strong>breed</strong>, and <strong>size</strong> of the animal
+                </li>
+                <li>
+                  Spay/neuter status, health conditions, and <strong>special needs</strong> (e.g., only cat in the house)
+                </li>
+                <li>
+                  <strong>Rescue circumstances</strong> (e.g., owner surrendered, rescued from a hoarding situation, etc.)
+                </li>
+                <li>
+                  <strong>Distinct traits</strong>, behavioural characteristics (e.g., loves to play fetch, loves to cuddle)
+                </li>
+              </ul>
+            </div>
+          </div>
 
-        {/* Form upload section */}
-        <div className="md:col-span-2 space-y-8">
+          {/* Form upload section */}
+          <div className="flex-1 space-y-8">
           <div className="flex flex-col gap-2">
             <H1>Create a custom profile bio for your pet</H1>
             <p className="text-gray-600 mb-4">
@@ -461,6 +464,7 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
             editableSummary={editableSummary}
             onSummaryChange={setEditableSummary}
           />
+          </div>
         </div>
       </div>
       <Footer />
