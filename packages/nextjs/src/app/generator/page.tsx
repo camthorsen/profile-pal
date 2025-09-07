@@ -8,7 +8,7 @@ import Image from 'next/image';
 import type { ClipScore } from 'pet-profiler-api';
 import { type ChangeEvent, type ReactElement, useRef, useState } from 'react';
 
-import { Card } from '@/components/Card';
+import { Card } from '@/components/Card.tsx';
 import { Chip } from '@/components/Chip.tsx';
 import { CopyToClipboardButton } from '@/components/CopyToClipboardButton.tsx';
 import { DisclosurePanelComponent } from '@/components/DisclosurePanel.tsx';
@@ -20,6 +20,7 @@ import { LanguageSelector } from '@/components/LanguageSelector.tsx';
 import { LoadingSpinner } from '@/components/LoadingSpinner.tsx';
 import { PrimaryButton } from '@/components/PrimaryButton.tsx';
 import { SecondaryButton } from '@/components/SecondaryButton.tsx';
+import { Stopwatch } from '@/components/Stopwatch.tsx';
 import { H1 } from '@/components/typography/H1.tsx';
 import { H2 } from '@/components/typography/H2.tsx';
 import { cn } from '@/utils/cn.ts';
@@ -129,12 +130,15 @@ function AudioSection({
 
       {/* 2B: Record in-browser */}
       <div>
-        <SecondaryButton
-          onClick={onToggleRecording}
-          icon="🔴"
-          text={isRecording ? 'Stop recording' : 'Start recording'}
-          className={cn(isRecording && 'bg-red-500 text-white border-red-500 hover:bg-red-600 hover:text-white')}
-        />
+        <div className="flex items-center gap-4">
+          <SecondaryButton
+            onClick={onToggleRecording}
+            icon="🔴"
+            text={isRecording ? 'Stop recording' : 'Start recording'}
+            className={cn(isRecording && 'bg-red-500 text-white border-red-500 hover:bg-red-600 hover:text-white')}
+          />
+          <Stopwatch isActive={isRecording} />
+        </div>
         <div className="mt-2">
           <ReactMic
             record={isRecording}
@@ -236,6 +240,7 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
 
   // Ref for resetting file input TODO: Remove if not needed
   const fileInputRef = useRef<HTMLInputElement>(null);
+
 
   /**
    * 1) Handle image selection from disk and compress it client‐side.
