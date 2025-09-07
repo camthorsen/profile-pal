@@ -21,6 +21,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner.tsx';
 import { PrimaryButton } from '@/components/PrimaryButton.tsx';
 import { SecondaryButton } from '@/components/SecondaryButton.tsx';
 import { Stopwatch } from '@/components/Stopwatch.tsx';
+import { Tips } from '@/components/Tips.tsx';
 import { H1 } from '@/components/typography/H1.tsx';
 import { H2 } from '@/components/typography/H2.tsx';
 import { cn } from '@/utils/cn.ts';
@@ -359,25 +360,10 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
       <Header />
       <div className="flex-1 x-constraint py-12">
         <div className="flex gap-8">
-          {/* Tips card - sticky sidebar */}
+          {/* Tips card - sticky sidebar (desktop only) */}
           <div className="hidden md:block w-80 flex-shrink-0">
-            <div className="sticky top-8 rounded-lg shadow-md flex flex-col bg-brand-orange p-6">
-              <H2 className="mb-2">Audio Recording Tips</H2>
-              <p className="mb-4">Focus on the facts and briefly mention the following:</p>
-              <ul className="list-disc list-outside px-6">
-                <li>
-                  <strong>Age</strong>, <strong>breed</strong>, and <strong>size</strong> of the animal
-                </li>
-                <li>
-                  Spay/neuter status, health conditions, and <strong>special needs</strong> (e.g., only cat in the house)
-                </li>
-                <li>
-                  <strong>Rescue circumstances</strong> (e.g., owner surrendered, rescued from a hoarding situation, etc.)
-                </li>
-                <li>
-                  <strong>Distinct traits</strong>, behavioural characteristics (e.g., loves to play fetch, loves to cuddle)
-                </li>
-              </ul>
+            <div className="sticky top-8">
+              <Tips />
             </div>
           </div>
 
@@ -388,6 +374,11 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
             <p className="text-gray-600 mb-4">
               Well-written profiles help pets find their forever homes. Upload a photo of the animal and a voice recording describing them, and the app will generate a professionally-written profile bio in the selected language. 
             </p>
+          </div>
+
+          {/* Tips card - mobile only (below intro) */}
+          <div className="md:hidden">
+            <Tips />
           </div>
 
           <DisclosurePanelComponent
