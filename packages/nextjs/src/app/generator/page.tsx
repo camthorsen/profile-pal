@@ -21,6 +21,7 @@ import { SecondaryButton } from '@/components/SecondaryButton.tsx';
 import { H1 } from '@/components/typography/H1.tsx';
 import { H2 } from '@/components/typography/H2.tsx';
 import { cn } from '@/utils/cn.ts';
+import { Card } from '@/components/Card';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
   ssr: false,
@@ -149,13 +150,21 @@ function AudioSection({
   );
 }
 
-function ResultsSection({ responseData }: { responseData: ProfileResponse | null }): ReactElement | null {
+function ResultsSection({ 
+  responseData, 
+  editableSummary, 
+  onSummaryChange 
+}: { 
+  responseData: ProfileResponse | null;
+  editableSummary: string;
+  onSummaryChange: (summary: string) => void;
+}): ReactElement | null {
   if (!responseData) return null;
 
   return (
     <div className="mt-8 border-t pt-6 space-y-6">
       <div className="flex flex-col gap-3">
-        <h2 className="text-xl font-semibold">Generated Tags:</h2>
+        <H2>Generated Tags:</H2>
         <div className="flex flex-wrap gap-2">
           {responseData.clipScores.map(({ label }) => (
             <Chip key={label} label={label} />
@@ -172,24 +181,27 @@ function ResultsSection({ responseData }: { responseData: ProfileResponse | null
       </div>
       
       <div className="flex flex-col gap-3">
-        <h2 className="text-xl font-semibold">Transcribed Audio:</h2>
+        <H2>Transcribed Audio:</H2>
         <div className="px-4 border-l-2 border-neutral-300">
           <p className="text-gray-700 italic">"{responseData.transcript}"</p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <h2 className="text-xl font-semibold">Generated Profile Summary:</h2>
-        <div className="bg-white rounded-lg shadow-md p-6 flex gap-4 prose">
-          {responseData.summary.split('\n\n').map((para, idx) => (
-            <p key={idx}>{para}</p>
-          ))}
-        </div>
+      <Card title="Generated Profile Summary:">
         <div className="flex">
-          <CopyToClipboardButton text={responseData.summary} buttonText="Copy Summary" successText="Copied!" />
+          <textarea
+            id="summary"
+            name="summary"
+            rows={5}
+            value={editableSummary}
+            onChange={(e) => onSummaryChange(e.target.value)}
+            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-indigo-500"
+          />
         </div>
-      </div>
-      
+        <div className="flex mt-4">
+          <CopyToClipboardButton text={editableSummary} buttonText="Copy Summary" successText="Copied!" />
+        </div>
+      </Card>
     </div>
   );
 }
@@ -208,6 +220,9 @@ export default function GeneratorPage(): ReactElement {
 
   // —— State for server response —— //
   const [responseData, setResponseData] = useState<ProfileResponse | null>(null);
+
+  // —— State for editable summary —— //
+  const [editableSummary, setEditableSummary] = useState<string>('');
 
   // —— State for language selection —— //
   const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
@@ -323,6 +338,7 @@ export default function GeneratorPage(): ReactElement {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const profileResponse: ProfileResponse = await resp.json();
       setResponseData(profileResponse);
+      setEditableSummary(profileResponse.summary);
     } catch (error) {
       console.error('Error calling /api/process-profile:', error);
       alert('Something went wrong generating the profile. Check console for details.');
@@ -430,7 +446,11 @@ export default function GeneratorPage(): ReactElement {
 
           {isGenerating && <div className="mt-6 border-t pt-4 space-y-4">Generating profile ...</div>}
 
-          <ResultsSection responseData={responseData} />
+          <ResultsSection 
+            responseData={responseData} 
+            editableSummary={editableSummary}
+            onSummaryChange={setEditableSummary}
+          />
         </div>
       </div>
     </div>
