@@ -1,6 +1,5 @@
-import { type ReactElement } from 'react';
-
 import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
+import { type ReactElement } from 'react';
 
 import { CheckIcon, ChevronIcon } from './icons';
 
@@ -29,7 +28,6 @@ export function LanguageSelector({
   onLanguageChange,
   languages = DEFAULT_LANGUAGES,
   label = 'Output Language',
-  helperText = 'Select the language for the generated profile summary',
   className,
 }: LanguageSelectorProps): ReactElement {
   const selectedLang = languages.find(lang => lang.value === selectedLanguage) ?? languages[0];
@@ -73,11 +71,6 @@ export function LanguageSelector({
           </ListboxOptions>
         </div>
       </Listbox>
-      {helperText && (
-        <p className="text-xs text-gray-500">
-          {helperText}
-        </p>
-      )}
     </div>
   );
 }

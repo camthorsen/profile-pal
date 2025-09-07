@@ -386,8 +386,7 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
           <div className="flex flex-col gap-2">
             <H1>Create a custom profile bio for your pet</H1>
             <p className="text-gray-600 mb-4">
-              This is a demo of the animal adoption profile generator. It uses a simple image and audio to generate a
-              profile.
+              Well-written profiles help pets find their forever homes. Upload a photo of the animal and a voice recording describing them, and the app will generate a professionally-written profile bio in the selected language. 
             </p>
           </div>
 

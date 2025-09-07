@@ -25,10 +25,10 @@ export default function HomePage(): ReactElement {
       <Header />
       <div className="flex-1 flex items-center justify-center">
         <div className="flex x-constraint py-12 gap-8 border border-brand-pink">
-          <div className="flex flex-col gap-3">
-            <h1 className='text-4xl font-bold'>Welcome to the<br/> Pet Profile Generator!</h1>
+          <div className="flex flex-col gap-3 max-w-xl">
+            <h1 className='text-4xl font-bold'>A free tool to help animals<br/>find their forever homes!</h1>
             <p className='text-xl text-neutral-600'>
-              This is an AI tool that allows you to generate a profile for your pet.
+              Profile Pal is a multi-language AI tool that allows you to create engaging profile bios, using only a photo and a voice recording.
             </p>
             <div className="flex mt-3">
               <PrimaryButton text="Get Started" onClick={() => router.push('/generator')} />
