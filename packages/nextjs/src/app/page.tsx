@@ -1,12 +1,14 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 
-import Layout from '../components/Layout.jsx';
+import { Footer } from '@/components/Footer.jsx';
 import { Header } from '@/components/Header.jsx';
 import { PrimaryButton } from '@/components/PrimaryButton.jsx';
+
+import Layout from '../components/Layout.jsx';
 
 export default function HomePage(): ReactElement {
   const router = useRouter();
@@ -37,6 +39,7 @@ export default function HomePage(): ReactElement {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
