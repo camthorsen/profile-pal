@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { type ClipScore, getClipScoresFromImage } from 'pet-profiler-api';
+import { type ClipScore, type ProfileResponse, getClipScoresFromImage } from 'pet-profiler-api';
 
 import { streamToTempFile } from '../../lib/stream-to-tempfile.ts';
 import { transcribeWithDockerWhisper } from '../audio/transcribe/transcribeWithDockerWhisper.js';
@@ -44,12 +44,14 @@ app.post(async (context) => {
     // Step 3: Generate summary using LLM
     const summary = await summarizeHandler(transcript, labels, { outputLanguage: languageString });
 
-    return context.json({
+    const response: ProfileResponse = {
       clipScores,
-      labels, // helpful for the UI
-      transcript, // for debugging/preview
-      summary, // final bio
-    });
+      labels,
+      transcript,
+      summary,
+    };
+    
+    return context.json(response);
   } catch (error: unknown) {
     console.error('❌ Failed to process profile:', error);
     return context.text('Internal server error', 500);

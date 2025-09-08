@@ -1,16 +1,11 @@
-import type { ClipScore, ReactElement } from 'pet-profiler-api';
+import type { ProfileResponse } from 'pet-profiler-api';
+import { type ReactElement } from 'react';
 
 import { Card } from '@/components/Card.tsx';
 import { Chip } from '@/components/Chip.tsx';
 import { CopyToClipboardButton } from '@/components/CopyToClipboardButton.tsx';
 import { H2 } from '@/components/typography/H2.tsx';
 
-interface ProfileResponse {
-  clipScores: ClipScore[];
-  bestTag: string; // e.g. ["cat", "short fur", …]
-  transcript: string; // The transcribed audio text
-  summary: string; // 1–2 paragraphs of descriptive text
-}
 
 interface ResultsSectionProps {
   responseData: ProfileResponse | null;

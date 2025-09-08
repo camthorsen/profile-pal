@@ -12,7 +12,7 @@ function Layout({ children, title = 'This is the default title' }: Readonly<Prop
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <link rel="icon" type="image/jpg" href="/logo-sm.jpg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link href="https://fonts.googleapis.com/css2?family=Oldenburg&display=swap" rel="stylesheet" />
       </Head>
       <Header />

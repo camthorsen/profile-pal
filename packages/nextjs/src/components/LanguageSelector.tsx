@@ -30,7 +30,7 @@ export function LanguageSelector({
   label = 'Output Language',
   className,
 }: LanguageSelectorProps): ReactElement {
-  const selectedLang = languages.find(lang => lang.value === selectedLanguage) ?? languages[0];
+  const selectedLang = languages.find(lang => lang.value === selectedLanguage) ?? languages[0]!;
 
   return (
     <div className={`space-y-2 ${className || ''}`}>

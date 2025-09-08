@@ -2,23 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import type { ReactElement } from 'react';
-import { useEffect, useState } from 'react';
 
 import { Footer } from '@/components/Footer.jsx';
 import { Header } from '@/components/Header.jsx';
 import { PrimaryButton } from '@/components/PrimaryButton.jsx';
 
-import Layout from '../components/Layout.jsx';
-
 export default function HomePage(): ReactElement {
   const router = useRouter();
-  const [date, setDate] = useState<Date | undefined>();
-
-  useEffect(() => {
-    setDate(new Date());
-    const timerId = setInterval(() => setDate(new Date()), 1000);
-    return () => clearInterval(timerId);
-  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">

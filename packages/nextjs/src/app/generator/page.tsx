@@ -3,7 +3,7 @@
 'use client'; // ← This file uses React hooks, so it must run in the browser
 
 import imageCompression from 'browser-image-compression';
-import type { ClipScore } from 'pet-profiler-api';
+import type { ProfileResponse } from 'pet-profiler-api';
 import { type ChangeEvent, type ReactElement, useRef, useState } from 'react';
 
 import { AudioSection } from '@/components/AudioSection.tsx';
@@ -20,13 +20,6 @@ import { SecondaryButton } from '@/components/SecondaryButton.tsx';
 import { Tips } from '@/components/Tips.tsx';
 import { H1 } from '@/components/typography/H1.tsx';
 import { cn } from '@/utils/cn.ts';
-
-interface ProfileResponse {
-  clipScores: ClipScore[];
-  bestTag: string; // e.g. ["cat", "short fur", …]
-  transcript: string; // The transcribed audio text
-  summary: string; // 1–2 paragraphs of descriptive text
-}
 
 
 function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement {
@@ -86,7 +79,7 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
         lastModified: Date.now(),
       });
       setCompressedImage(compressedFile);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Image compression failed:', error);
       // If compression fails, fall back to the original file
       setCompressedImage(file);
@@ -107,14 +100,14 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
   /**
    * 2B) In-browser recording with ReactMic
    */
-  function toggleRecording() {
+  function toggleRecording(): void {
     setIsRecording((prev) => !prev);
   }
-  function onData(_recordedChunk: Blob) {
+  function onData(_recordedChunk: Blob): void {
     // We could process streaming chunks here; for MVP we just ignore intermediate data
   }
 
-  function onStop(recordedData: { blob: Blob }) {
+  function onStop(recordedData: { blob: Blob }): void {
     // Once recording stops, we get a Blob. Wrap it in a File so we can attach to FormData
     setRecordingBlob(recordedData.blob);
     const fileFromBlob = new File([recordedData.blob], 'recorded_audio.webm', {
@@ -127,7 +120,7 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
   /**
    * 3) Package compressedImage + audioFile into FormData and POST to the API route.
    */
-  async function handleSubmit() {
+  async function handleSubmit(): Promise<void> {
     setIsGenerating(true);
     setResponseData(null);
     
@@ -157,12 +150,10 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
         throw new Error(`Server responded with ${resp.status}`);
       }
 
-      // FIXME: Validate response.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const profileResponse: ProfileResponse = await resp.json();
       setResponseData(profileResponse);
       setEditableSummary(profileResponse.summary);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error calling /api/process-profile:', error);
       alert('Something went wrong generating the profile. Check console for details.');
     }

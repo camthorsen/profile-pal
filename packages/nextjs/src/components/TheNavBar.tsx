@@ -7,7 +7,7 @@ interface NavLink {
   href: string;
 }
 
-function classNames(...classes: string[]) {
+function classNames(...classes: string[]): string {
   return classes.filter(Boolean).join(' ');
 }
 
