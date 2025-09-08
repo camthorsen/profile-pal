@@ -3,213 +3,29 @@
 'use client'; // ← This file uses React hooks, so it must run in the browser
 
 import imageCompression from 'browser-image-compression';
-import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import type { ClipScore } from 'pet-profiler-api';
 import { type ChangeEvent, type ReactElement, useRef, useState } from 'react';
 
-import { Card } from '@/components/Card.tsx';
-import { Chip } from '@/components/Chip.tsx';
-import { CopyToClipboardButton } from '@/components/CopyToClipboardButton.tsx';
+import { AudioSection } from '@/components/AudioSection.tsx';
 import { DisclosurePanelComponent } from '@/components/DisclosurePanel.tsx';
-import { DragDropInput } from '@/components/DragDropInput.tsx';
 import { Footer } from '@/components/Footer.tsx';
 import { Header } from '@/components/Header.tsx';
-import { ResetIcon,SuccessIcon, UploadIcon } from '@/components/icons/index.ts';
+import { ResetIcon } from '@/components/icons/index.ts';
+import { ImageUploadSection } from '@/components/ImageUploadSection.tsx';
 import { LanguageSelector } from '@/components/LanguageSelector.tsx';
 import { LoadingSpinner } from '@/components/LoadingSpinner.tsx';
 import { PrimaryButton } from '@/components/PrimaryButton.tsx';
+import { ResultsSection } from '@/components/ResultsSection.tsx';
 import { SecondaryButton } from '@/components/SecondaryButton.tsx';
-import { Stopwatch } from '@/components/Stopwatch.tsx';
 import { Tips } from '@/components/Tips.tsx';
 import { H1 } from '@/components/typography/H1.tsx';
-import { H2 } from '@/components/typography/H2.tsx';
 import { cn } from '@/utils/cn.ts';
-
-const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
-  ssr: false,
-});
 
 interface ProfileResponse {
   clipScores: ClipScore[];
   bestTag: string; // e.g. ["cat", "short fur", …]
   transcript: string; // The transcribed audio text
   summary: string; // 1–2 paragraphs of descriptive text
-}
-
-function ImageUploadSection({
-  rawImageFile,
-  compressedImage,
-  fileInputRef,
-  onImageChange,
-}: {
-  rawImageFile: File | undefined;
-  compressedImage: File | undefined;
-  fileInputRef: React.RefObject<HTMLInputElement | null>;
-  onImageChange: (e: ChangeEvent<HTMLInputElement>) => Promise<void>;
-}): ReactElement {
-  const uploadIcon = <UploadIcon />;
-  const successIcon = <SuccessIcon />;
-
-  return (
-    <div>
-      <DragDropInput
-        accept="image/*"
-        file={compressedImage}
-        onFileChange={onImageChange}
-        fileInputRef={fileInputRef}
-        uploadText="Upload an image"
-        fileTypesText="PNG, JPG, GIF up to 10MB"
-        successText="Image uploaded successfully"
-        changeText="Click to upload a different image"
-        uploadIcon={uploadIcon}
-        successIcon={successIcon}
-      />
-
-      {rawImageFile && (
-        <div className="mt-4 text-sm text-gray-600">
-          <p>
-            Original: {rawImageFile.name} ({(rawImageFile.size / 1024).toFixed(1)} KB)
-          </p>
-        </div>
-      )}
-      {compressedImage && (
-        <div className="mt-4">
-          <p className="text-sm text-gray-600 mb-2">Compressed size: {(compressedImage.size / 1024).toFixed(1)} KB</p>
-          <Image
-            src={URL.createObjectURL(compressedImage)}
-            alt="Compressed preview"
-            width={200}
-            height={200}
-            className="object-contain rounded-md border"
-          />
-        </div>
-      )}
-    </div>
-  );
-}
-
-function AudioSection({
-  audioFile,
-  isRecording,
-  onAudioUploadChange,
-  onToggleRecording,
-  onStop,
-  onData,
-}: {
-  audioFile: File | undefined;
-  isRecording: boolean;
-  onAudioUploadChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onToggleRecording: () => void;
-  onStop: (recordedData: { blob: Blob }) => void;
-  onData: (recordedChunk: Blob) => void;
-}): ReactElement {
-  const uploadIcon = <UploadIcon />;
-  const successIcon = <SuccessIcon />;
-
-  return (
-    <div className="space-y-4">
-      {/* 2A: Upload existing audio */}
-      <div>
-        <DragDropInput
-          accept="audio/*"
-          file={audioFile}
-          onFileChange={onAudioUploadChange}
-          uploadText="Upload an audio file"
-          fileTypesText="MP3, WAV, M4A up to 4MB"
-          successText="Audio file uploaded successfully"
-          changeText="Click to upload a different audio file"
-          uploadIcon={uploadIcon}
-          successIcon={successIcon}
-        />
-        {audioFile && (
-          <p className="mt-1 text-sm text-gray-600">
-            Selected audio: {audioFile.name} ({(audioFile.size / 1024).toFixed(1)} KB)
-          </p>
-        )}
-      </div>
-
-      {/* 2B: Record in-browser */}
-      <div>
-        <div className="flex items-center gap-4">
-          <SecondaryButton
-            onClick={onToggleRecording}
-            icon="🔴"
-            text={isRecording ? 'Stop recording' : 'Start recording'}
-            className={cn(isRecording && 'bg-red-500 text-white border-red-500 hover:bg-red-600 hover:text-white')}
-          />
-          <Stopwatch isActive={isRecording} />
-        </div>
-        <div className="mt-2">
-          <ReactMic
-            record={isRecording}
-            className="w-full"
-            onStop={onStop}
-            onData={onData}
-            mimeType="audio/webm" // record as WebM (reasonable bitrate)
-            strokeColor="#4CAF50"
-            backgroundColor="#f0f0f0"
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ResultsSection({ 
-  responseData, 
-  editableSummary, 
-  onSummaryChange 
-}: { 
-  responseData: ProfileResponse | null;
-  editableSummary: string;
-  onSummaryChange: (summary: string) => void;
-}): ReactElement | null {
-  if (!responseData) return null;
-
-  return (
-    <div className="mt-8 border-t pt-6 space-y-6">
-      <div className="flex flex-col gap-3">
-        <H2>Generated Tags:</H2>
-        <div className="flex flex-wrap gap-2">
-          {responseData.clipScores.map(({ label }) => (
-            <Chip key={label} label={label} />
-          ))}
-        </div>
-        <p>Raw tag scores:</p>
-        <ul className="list-disc list-inside -mt-2">
-          {responseData.clipScores.map(({ label, score }) => (
-            <li key={label}>
-              {label} ({score})
-            </li>
-          ))}
-        </ul>
-      </div>
-      
-      <div className="flex flex-col gap-3">
-        <H2>Transcribed Audio:</H2>
-        <div className="px-4 border-l-2 border-neutral-300">
-          <p className="text-gray-700 italic">"{responseData.transcript}"</p>
-        </div>
-      </div>
-
-      <Card title="Generated Profile Summary:">
-        <div className="flex">
-          <textarea
-            id="summary"
-            name="summary"
-            rows={5}
-            value={editableSummary}
-            onChange={(e) => onSummaryChange(e.target.value)}
-            className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 dark:bg-white/5 dark:text-white dark:outline-white/10 dark:placeholder:text-gray-500 dark:focus:outline-indigo-500"
-          />
-        </div>
-        <div className="flex mt-4">
-          <CopyToClipboardButton text={editableSummary} buttonText="Copy Summary" successText="Copied!" />
-        </div>
-      </Card>
-    </div>
-  );
 }
 
 
