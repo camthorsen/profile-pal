@@ -20,12 +20,12 @@ export function CopyToClipboardButton({
 }: CopyToClipboardProps): ReactElement {
   const [isCopied, setIsCopied] = useState(false);
 
-  async function handleCopy() {
+  async function handleCopy(): Promise<void> {
     try {
       await navigator.clipboard.writeText(text);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000); // Show success message on button for 2 seconds after copy
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to copy text:', error);
     }
   }

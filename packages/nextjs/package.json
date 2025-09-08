@@ -10,6 +10,7 @@
     "ws": "node --import tsx ../../scripts/run-workspace-script.ts"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.7",
     "@williamthorsen/toolbelt.objects": "3.0.2",
     "browser-image-compression": "2.0.2",
     "clsx": "2.1.1",

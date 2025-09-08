@@ -1,6 +1,8 @@
 import { readFile } from 'node:fs/promises';
 import { basename } from 'node:path';
 
+import type { ClipScore } from '../types.ts';
+
 export async function getClipScoresFromImage(filePath: string): Promise<ClipScore[]> {
   const fileBuffer = await readFile(filePath);
   const fileName = basename(filePath);
@@ -18,8 +20,7 @@ export async function getClipScoresFromImage(filePath: string): Promise<ClipScor
     throw new Error(`Request failed: ${response.status} ${response.statusText}\n${text}`);
   }
 
-  // @ts-expect-error - Need to use Zod to validate
-  return response.json();
+  return (await response.json()) as ClipScore[];
 }
 
 export function getBestClipScore(tags: ClipScore[]): ClipScore {
@@ -31,7 +32,3 @@ export function getBestClipScore(tags: ClipScore[]): ClipScore {
   return tags.reduce((best, current) => (current.score > best.score ? current : best));
 }
 
-export interface ClipScore {
-  label: string;
-  score: number;
-}
