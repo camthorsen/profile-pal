@@ -57,7 +57,7 @@ export function getValueAtPathOrThrow(obj: unknown, path: unknown): unknown {
   let current: unknown = obj;
 
   for (const key of keys) {
-    if (Array.isArray(current) && /^\d+$/.test(key)) {
+    if (Array.isArray(current) && /^\d+$/.it(key)) {
       const index = Number(key);
       if (index in current) {
         current = current[index];

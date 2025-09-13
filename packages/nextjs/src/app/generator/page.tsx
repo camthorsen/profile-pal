@@ -2,7 +2,6 @@
 
 'use client'; // ← This file uses React hooks, so it must run in the browser
 
-import imageCompression from 'browser-image-compression';
 import type { ProfileResponse } from 'pet-profiler-api';
 import { type ChangeEvent, type ReactElement, useRef, useState } from 'react';
 
@@ -20,6 +19,8 @@ import { SecondaryButton } from '@/components/SecondaryButton.tsx';
 import { Tips } from '@/components/Tips.tsx';
 import { H1 } from '@/components/typography/H1.tsx';
 import { cn } from '@/utils/cn.ts';
+import { compressImage } from '@/utils/imageCompression.ts';
+import { validateGeneratorForm } from '@/utils/formValidation.ts';
 
 
 function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement {
@@ -66,19 +67,12 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
     setRawImageFile(file);
 
     try {
-      // Configure options: max 0.5 MB, max dimension 800px
-      const options = {
+      const result = await compressImage(file, {
         maxSizeMB: 0.5,
         maxWidthOrHeight: 800,
         useWebWorker: true,
-      };
-      const compressedBlob = await imageCompression(file, options);
-      // Wrap the Blob into a new File so we can append it to FormData
-      const compressedFile = new File([compressedBlob], file.name, {
-        type: compressedBlob.type,
-        lastModified: Date.now(),
       });
-      setCompressedImage(compressedFile);
+      setCompressedImage(result.compressedFile);
     } catch (error: unknown) {
       console.error('Image compression failed:', error);
       // If compression fails, fall back to the original file
@@ -127,16 +121,23 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
     // Close all disclosure panels when generation starts
     setDisclosureKey(prev => prev + 1);
 
-    if (!compressedImage || !audioFile) {
-      alert('Please provide both an image and an audio clip before submitting.');
+    // Validate form data
+    const validation = validateGeneratorForm({
+      image: compressedImage,
+      audio: audioFile,
+      language: selectedLanguage,
+    });
+
+    if (!validation.isValid) {
+      alert(validation.errors.join('\n'));
       setIsGenerating(false);
       return;
     }
 
     // Build FormData: keys must match what our API will expect ("image", "audio", & "language")
     const formData = new FormData();
-    formData.append('image', compressedImage);
-    formData.append('audio', audioFile);
+    formData.append('image', compressedImage!);
+    formData.append('audio', audioFile!);
     formData.append('language', selectedLanguage);
 
     try {
