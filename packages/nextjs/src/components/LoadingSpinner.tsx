@@ -9,6 +9,7 @@ export function LoadingSpinner({ className = 'w-5 h-5' }: LoadingSpinnerProps): 
   return (
     // SVG taken from: https://flowbite.com/docs/components/spinner/
     <svg
+      data-testid="loading-spinner"
       aria-hidden="true"
       className={cn('animate-spin fill-sky-600', className)}
       viewBox="0 0 100 101"
