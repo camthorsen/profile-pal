@@ -1,10 +1,12 @@
+import type { ReactElement } from 'react';
+
 import { H2 } from '@/components/typography/H2.tsx';
 
 interface TipsProps {
   className?: string;
 }
 
-export function Tips({ className }: TipsProps) {
+export function Tips({ className }: TipsProps): ReactElement {
   return (
     <div className={`rounded-lg shadow-md flex flex-col bg-brand-orange p-6 ${className || ''}`}>
       <H2 className="mb-2">Audio Recording Tips</H2>

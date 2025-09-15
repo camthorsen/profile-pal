@@ -6,7 +6,7 @@ import {
   validateAudioFile,
   validateGeneratorForm,
   validateImageFile,
-} from '../formValidation';
+} from '../formValidation.ts';
 
 // Mock File constructor for tests
 class MockFile {
@@ -19,7 +19,8 @@ class MockFile {
     this.size = parts.reduce((total, part) => {
       if (typeof part === 'string') return total + part.length;
       if (part instanceof ArrayBuffer) return total + part.byteLength;
-      return total + (part as any).size || 0;
+      if (part instanceof Blob) return total + part.size;
+      return total;
     }, 0);
     this.type = options?.type || '';
   }

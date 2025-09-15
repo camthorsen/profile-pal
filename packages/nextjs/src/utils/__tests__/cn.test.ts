@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { cn } from '../cn';
+import { cn } from '../cn.ts';
 
 describe('cn utility', () => {
   it('combines basic class names', () => {

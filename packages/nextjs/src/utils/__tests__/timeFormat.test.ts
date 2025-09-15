@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatDuration, formatTime, parseTimeToSeconds } from '../timeFormat';
+import { formatDuration, formatTime, parseTimeToSeconds } from '../timeFormat.ts';
 
 describe('formatTime', () => {
   it('formats zero seconds', () => {

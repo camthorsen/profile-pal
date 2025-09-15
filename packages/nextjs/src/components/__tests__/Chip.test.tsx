@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { Chip } from '../Chip';
+import { Chip } from '../Chip.tsx';
 
 describe('Chip', () => {
   it('renders with label', () => {

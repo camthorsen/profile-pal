@@ -1,7 +1,7 @@
 import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
 import { type ReactElement } from 'react';
 
-import { CheckIcon, ChevronIcon } from './icons';
+import { CheckIcon, ChevronIcon } from './icons/index.ts';
 
 export interface LanguageOption {
   value: string;

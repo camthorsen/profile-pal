@@ -41,6 +41,9 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
   // —— State for language selection —— //
   const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
 
+  // —— State for form errors —— //
+  const [formError, setFormError] = useState<string | null>(null);
+
   // —— State for disclosure panels —— //
   const [isImageUploadOpen, setIsImageUploadOpen] = useState<boolean>(true);
   const [isAudioDescriptionOpen, setIsAudioDescriptionOpen] = useState<boolean>(true);
@@ -127,7 +130,7 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
     });
 
     if (!validation.isValid) {
-      alert(validation.errors.join('\n'));
+      setFormError(validation.errors.join('\n'));
       setIsGenerating(false);
       return;
     }
@@ -154,7 +157,7 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
       setEditableSummary(profileResponse.summary);
     } catch (error: unknown) {
       console.error('Error calling /api/process-profile:', error);
-      alert('Something went wrong generating the profile. Check console for details.');
+      setFormError('Something went wrong generating the profile. Check console for details.');
     }
     setIsGenerating(false);
   }
@@ -186,6 +189,18 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
           <aside className="md:hidden" aria-label="Tips and guidance">
             <Tips />
           </aside>
+
+          {formError && (
+            <div className="rounded-md bg-red-50 p-4 border border-red-200">
+              <div className="text-sm text-red-700">{formError}</div>
+              <button 
+                onClick={() => setFormError(null)}
+                className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
 
           <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} className="space-y-6">
           <DisclosurePanelComponent

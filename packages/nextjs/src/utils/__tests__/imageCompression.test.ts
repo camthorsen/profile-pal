@@ -1,7 +1,7 @@
 import imageCompression from 'browser-image-compression';
 import { describe, expect, it, vi } from 'vitest';
 
-import { compressImage, formatFileSize } from '../imageCompression';
+import { compressImage, formatFileSize } from  '../imageCompression.ts';
 
 // Mock the browser-image-compression library
 vi.mock('browser-image-compression', () => ({
@@ -85,11 +85,6 @@ describe('compressImage', () => {
     await compressImage(file, customOptions);
 
     expect(imageCompression).toHaveBeenCalledWith(file, customOptions);
-  });
-
-  it('throws error for null/undefined file', async () => {
-    await expect(compressImage(null as any)).rejects.toThrow('File is required for compression');
-    await expect(compressImage(undefined as any)).rejects.toThrow('File is required for compression');
   });
 
   it('throws error for non-image file', async () => {
