@@ -1,5 +1,3 @@
-/* eslint no-alert: off */
-
 'use client'; // ← This file uses React hooks, so it must run in the browser
 
 import type { ProfileResponse } from 'pet-profiler-api';
@@ -19,8 +17,8 @@ import { SecondaryButton } from '@/components/SecondaryButton.tsx';
 import { Tips } from '@/components/Tips.tsx';
 import { H1 } from '@/components/typography/H1.tsx';
 import { cn } from '@/utils/cn.ts';
-import { compressImage } from '@/utils/imageCompression.ts';
 import { validateGeneratorForm } from '@/utils/formValidation.ts';
+import { compressImage } from '@/utils/imageCompression.ts';
 
 
 function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement {
@@ -136,8 +134,8 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
 
     // Build FormData: keys must match what our API will expect ("image", "audio", & "language")
     const formData = new FormData();
-    formData.append('image', compressedImage!);
-    formData.append('audio', audioFile!);
+    if (compressedImage) formData.append('image', compressedImage);
+    if (audioFile) formData.append('audio', audioFile);
     formData.append('language', selectedLanguage);
 
     try {
@@ -166,29 +164,30 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
   return (
     <div className="flex flex-col justify-center items-center bg-neutral-100 min-h-screen">
       <Header />
-      <div className="flex-1 x-constraint py-12">
+      <main id="main-content" className="flex-1 x-constraint py-12">
         <div className="flex gap-8">
           {/* Tips card - sticky sidebar (desktop only) */}
-          <div className="hidden md:block w-80 flex-shrink-0">
+          <aside className="hidden md:block w-80 flex-shrink-0" aria-label="Audio recording tips">
             <div className="sticky top-8">
               <Tips />
             </div>
-          </div>
+          </aside>
 
           {/* Form upload section */}
           <div className="flex-1 space-y-8">
-          <div className="flex flex-col gap-2">
-            <H1>Create a custom profile bio for your pet</H1>
+          <section className="flex flex-col gap-2" aria-labelledby="generator-heading">
+            <H1 id="generator-heading">Create a custom profile bio for your pet</H1>
             <p className="text-gray-600 mb-4">
               Well-written profiles help pets find their forever homes. Upload a photo of the animal and a voice recording describing them, and the app will generate a professionally-written profile bio in the selected language. 
             </p>
-          </div>
+          </section>
 
           {/* Tips card - mobile only (below intro) */}
-          <div className="md:hidden">
+          <aside className="md:hidden" aria-label="Tips and guidance">
             <Tips />
-          </div>
+          </aside>
 
+          <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} className="space-y-6">
           <DisclosurePanelComponent
             title="Image Upload"
             stepNumber={1}
@@ -267,9 +266,10 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
             editableSummary={editableSummary}
             onSummaryChange={setEditableSummary}
           />
+          </form>
           </div>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );

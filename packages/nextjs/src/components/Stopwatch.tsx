@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactElement, useEffect, useRef, useState } from 'react';
+
 import { formatTime } from '@/utils/timeFormat.ts';
 
 interface StopwatchProps {

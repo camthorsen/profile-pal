@@ -20,7 +20,7 @@ export function TheNavBar(): ReactElement {
   ];
 
   return (
-    <nav className="flex justify-start gap-2">
+    <nav className="flex justify-start gap-2" aria-label="Main navigation">
       {navigation.map((item: NavLink) => {
         const isCurrent = pathname === item.href;
         return (
