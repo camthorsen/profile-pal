@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { getClipScoresFromImage } from 'pet-profiler-api';
+import { getClipScoresFromImage } from '../../../lib/getClipScoresFromImage.ts';
 
 import { streamToTempFile } from '../../../lib/stream-to-tempfile.ts';
 

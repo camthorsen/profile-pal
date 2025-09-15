@@ -1,4 +1,4 @@
-import type { ProfileResponse } from 'pet-profiler-api';
+import type { ProfileResponse } from 'pet-profiler-ai-host/types';
 import { type ReactElement } from 'react';
 
 import { Card } from '@/components/Card.tsx';

@@ -18,6 +18,8 @@
     "packages/*"
   ],
   "scripts": {
+    "start": "./scripts/start.sh",
+    "stop": "./scripts/stop.sh",
     "audit": "pnpm run audit:prod && pnpm run audit:dev",
     "audit:dev": "pnpm dlx audit-ci@^6 --config .audit-ci/config.dev.json5",
     "audit:prod": "pnpm dlx audit-ci@^6 --config .audit-ci/config.prod.json5",

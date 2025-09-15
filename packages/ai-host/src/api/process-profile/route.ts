@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
-import { type ClipScore, getClipScoresFromImage,type ProfileResponse } from 'pet-profiler-api';
+import { type ClipScore, type ProfileResponse } from '../../types.ts';
+
+import { getClipScoresFromImage } from '../../lib/getClipScoresFromImage.ts';
 
 import { streamToTempFile } from '../../lib/stream-to-tempfile.ts';
 import { transcribeWithDockerWhisper } from '../audio/transcribe/transcribeWithDockerWhisper.js';

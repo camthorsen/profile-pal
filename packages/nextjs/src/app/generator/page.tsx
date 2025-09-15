@@ -1,6 +1,6 @@
 'use client'; // ← This file uses React hooks, so it must run in the browser
 
-import type { ProfileResponse } from 'pet-profiler-api';
+import type { ProfileResponse } from 'pet-profiler-ai-host/types';
 import { type ChangeEvent, type ReactElement, useRef, useState } from 'react';
 
 import { AudioSection } from '@/components/AudioSection.tsx';
