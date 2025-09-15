@@ -1,9 +1,9 @@
-import { serve } from '@hono/node-server';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
+import { serve } from '@hono/node-server';
 // Load the repo root .env no matter the current working directory
 import { config as loadEnv } from 'dotenv';
-import { fileURLToPath } from 'node:url';
-import { dirname, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

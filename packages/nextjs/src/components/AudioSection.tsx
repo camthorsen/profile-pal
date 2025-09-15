@@ -2,9 +2,9 @@ import dynamic from 'next/dynamic';
 import type { ChangeEvent, ReactElement } from 'react';
 
 import { DragDropInput } from '@/components/DragDropInput.tsx';
+import { SuccessIcon, UploadIcon } from '@/components/icons/index.ts';
 import { SecondaryButton } from '@/components/SecondaryButton.tsx';
 import { Stopwatch } from '@/components/Stopwatch.tsx';
-import { SuccessIcon, UploadIcon } from '@/components/icons/index.ts';
 import { cn } from '@/utils/cn.ts';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {

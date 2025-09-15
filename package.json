@@ -28,6 +28,7 @@
     "fmt:check": "prettier --check .",
     "lint": "pnpm run root:lint && pnpm --recursive run ws lint",
     "lint:check": "pnpm run root:lint:check && pnpm --recursive run ws lint:check",
+    "lint:fix": "./scripts/fix-lint.sh",
     "lint:strict": "pnpm --recursive run ws lint:strict",
     "outdated": "pnpm outdated --compatible --recursive",
     "outdated:latest": "pnpm outdated --recursive",
@@ -44,6 +45,9 @@
     "typecheck:root": "tsc --noEmit",
     "update": "pnpm update --recursive",
     "update:latest": "pnpm update --latest --recursive"
+  },
+  "dependencies": {
+    "openai": "^5.16.0"
   },
   "devDependencies": {
     "@changesets/cli": "2.29.5",
@@ -66,8 +70,5 @@
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.2.4"
   },
-  "packageManager": "pnpm@10.13.1",
-  "dependencies": {
-    "openai": "^5.16.0"
-  }
+  "packageManager": "pnpm@10.13.1"
 }

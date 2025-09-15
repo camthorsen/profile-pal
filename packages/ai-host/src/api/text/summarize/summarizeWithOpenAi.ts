@@ -22,8 +22,8 @@
  *   - Polished adoption profile bio text
  */
 
-import OpenAI from 'openai';
 import { isObject } from '@williamthorsen/toolbelt.objects';
+import OpenAI from 'openai';
 
 /* ─────────────────────────────── Env / Client ────────────────────────────── */
 
@@ -114,8 +114,8 @@ function norm(label: string): string {
   return label
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, ' ')
-    .replace(/\s*-\s*/g, '-');
+    .replaceAll(/\s+/g, ' ')
+    .replaceAll(/\s*-\s*/g, '-');
 }
 
 const SPECIES_ALIASES: Record<string, string> = {
@@ -206,7 +206,7 @@ const ANIMAL_FACTS_SCHEMA = {
 /* ─────────────────────── Output readers + utilities ─────────────────────── */
 
 /** Build AI directive based on selected language. */
-type GenerateOptions = { outputLanguage?: 'auto' | string };
+interface GenerateOptions { outputLanguage?: 'auto' | string }
 
 function buildLanguageDirective(options?: GenerateOptions): string {
   if (options?.outputLanguage === 'auto') {
@@ -338,8 +338,8 @@ async function extractFacts(transcript: string, labels?: string[]): Promise<Anim
   });
 
   if (DEBUG) {
-    const usage = res && typeof res === 'object' && 'usage' in res ? (res as any).usage : undefined;
-    console.log('[OpenAI] Stage A status:', (res as any)?.status, 'usage:', usage);
+    const usage = res && typeof res === 'object' && 'usage' in res ? (res).usage : undefined;
+    console.log('[OpenAI] Stage A status:', (res)?.status, 'usage:', usage);
   }
 
   const parsed = collectParsed(res);
@@ -399,8 +399,8 @@ async function composeProfile(
 
   const text = collectText(res);
   return text
-    .replace(/\s+\n/g, '\n')
-    .replace(/\n{3,}/g, '\n\n')
+    .replaceAll(/\s+\n/g, '\n')
+    .replaceAll(/\n{3,}/g, '\n\n')
     .trim();
 }
 
@@ -418,7 +418,7 @@ export async function summarizeWithOpenAI(
   options?: { outputLanguage?: 'auto' | string },
 ): Promise<string> {
   // Stage A: extract facts
-  let facts = await extractFacts(transcript, labels);
+  const facts = await extractFacts(transcript, labels);
 
   // Merge deterministic hints from labels if extractor omitted them
   const derived = deriveSpeciesAndCoat(labels);

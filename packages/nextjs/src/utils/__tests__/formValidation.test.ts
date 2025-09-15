@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
+
 import {
-  validateGeneratorForm,
-  validateImageFile,
-  validateAudioFile,
   isValidLanguage,
   SUPPORTED_LANGUAGES,
+  validateAudioFile,
+  validateGeneratorForm,
+  validateImageFile,
 } from '../formValidation';
 
 // Mock File constructor for tests
@@ -25,7 +26,7 @@ class MockFile {
 }
 
 // Replace global File with test mock
-global.File = MockFile as any;
+globalThis.File = MockFile as any;
 
 describe('validateGeneratorForm', () => {
   it('validates complete form data', () => {
@@ -33,8 +34,8 @@ describe('validateGeneratorForm', () => {
     const audioFile = new File([''], 'test.mp3', { type: 'audio/mpeg' });
 
     const result = validateGeneratorForm({
-      image: imageFile as File,
-      audio: audioFile as File,
+      image: imageFile,
+      audio: audioFile,
       language: 'English',
     });
 
@@ -47,7 +48,7 @@ describe('validateGeneratorForm', () => {
 
     const result = validateGeneratorForm({
       image: undefined,
-      audio: audioFile as File,
+      audio: audioFile,
       language: 'English',
     });
 
@@ -59,7 +60,7 @@ describe('validateGeneratorForm', () => {
     const imageFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
 
     const result = validateGeneratorForm({
-      image: imageFile as File,
+      image: imageFile,
       audio: undefined,
       language: 'English',
     });
@@ -73,8 +74,8 @@ describe('validateGeneratorForm', () => {
     const audioFile = new File([''], 'test.mp3', { type: 'audio/mpeg' });
 
     const result = validateGeneratorForm({
-      image: imageFile as File,
-      audio: audioFile as File,
+      image: imageFile,
+      audio: audioFile,
       language: '',
     });
 
@@ -97,7 +98,7 @@ describe('validateGeneratorForm', () => {
 describe('validateImageFile', () => {
   it('validates correct image file', () => {
     const file = new File(['test content'], 'test.jpg', { type: 'image/jpeg' });
-    const result = validateImageFile(file as File);
+    const result = validateImageFile(file);
 
     expect(result.isValid).toBe(true);
     expect(result.errors).toEqual([]);
@@ -112,7 +113,7 @@ describe('validateImageFile', () => {
 
   it('rejects non-image file', () => {
     const file = new File([''], 'test.txt', { type: 'text/plain' });
-    const result = validateImageFile(file as File);
+    const result = validateImageFile(file);
 
     expect(result.isValid).toBe(false);
     expect(result.errors).toContain('File must be an image');
@@ -122,7 +123,7 @@ describe('validateImageFile', () => {
     // Create a mock file that's larger than 10MB
     const largeContent = 'x'.repeat(11 * 1024 * 1024);
     const file = new File([largeContent], 'large.jpg', { type: 'image/jpeg' });
-    const result = validateImageFile(file as File);
+    const result = validateImageFile(file);
 
     expect(result.isValid).toBe(false);
     expect(result.errors).toContain('Image file size must be less than 10MB');
@@ -132,7 +133,7 @@ describe('validateImageFile', () => {
 describe('validateAudioFile', () => {
   it('validates correct audio file', () => {
     const file = new File(['test content'], 'test.mp3', { type: 'audio/mpeg' });
-    const result = validateAudioFile(file as File);
+    const result = validateAudioFile(file);
 
     expect(result.isValid).toBe(true);
     expect(result.errors).toEqual([]);
@@ -147,7 +148,7 @@ describe('validateAudioFile', () => {
 
   it('rejects non-audio file', () => {
     const file = new File([''], 'test.txt', { type: 'text/plain' });
-    const result = validateAudioFile(file as File);
+    const result = validateAudioFile(file);
 
     expect(result.isValid).toBe(false);
     expect(result.errors).toContain('File must be an audio file');
@@ -157,7 +158,7 @@ describe('validateAudioFile', () => {
     // Create a mock file that's larger than 4MB
     const largeContent = 'x'.repeat(5 * 1024 * 1024);
     const file = new File([largeContent], 'large.mp3', { type: 'audio/mpeg' });
-    const result = validateAudioFile(file as File);
+    const result = validateAudioFile(file);
 
     expect(result.isValid).toBe(false);
     expect(result.errors).toContain('Audio file size must be less than 4MB');

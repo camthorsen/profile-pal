@@ -1,5 +1,6 @@
-import { render, screen, cleanup } from '@testing-library/react';
-import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { cleanup,render, screen } from '@testing-library/react';
+import { afterEach,beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { LanguageSelector } from '../LanguageSelector';
 
 describe('LanguageSelector', () => {
