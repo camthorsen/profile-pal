@@ -52,7 +52,6 @@ echo
 # Fix linting in each package
 fix_package_lint "packages/nextjs" "Next.js App"
 fix_package_lint "packages/ai-host" "AI Host"
-fix_package_lint "packages/api" "API Package"
 fix_package_lint "packages/_workspace" "Workspace Package"
 
 # Run workspace-wide linting
@@ -69,7 +68,6 @@ echo "Summary:"
 echo "  - Root-level linting: Fixed"
 echo "  - Next.js package: Fixed"
 echo "  - AI Host package: Fixed"
-echo "  - API package: Fixed"
 echo "  - Workspace package: Fixed"
 echo "  - Workspace-wide linting: Fixed"
 echo
