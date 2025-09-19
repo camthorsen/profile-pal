@@ -24,7 +24,7 @@ app.post(async (c) => {
     const clipScores = await getClipScoresFromImage(imagePath);
     return c.json(clipScores);
   } catch (error: unknown) {
-    console.error('❌ CLIP image tag error:', error);
+    console.error('ERROR: CLIP image tag error:', error);
     return c.text('Failed to tag image', 500);
   }
 });

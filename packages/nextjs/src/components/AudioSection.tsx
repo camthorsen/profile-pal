@@ -70,7 +70,7 @@ export function AudioSection({
             className="w-full"
             onStop={onStop}
             onData={onData}
-            mimeType="audio/webm" // record as WebM (reasonable bitrate)
+            mimeType="audio/webm" // record as WebM (has reasonable bitrate)
             strokeColor="#4CAF50"
             backgroundColor="#f0f0f0"
           />

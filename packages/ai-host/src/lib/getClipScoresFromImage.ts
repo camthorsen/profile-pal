@@ -26,12 +26,3 @@ export async function getClipScoresFromImage(filePath: string): Promise<ClipScor
   }
   return result;
 }
-
-export function getBestClipScore(tags: ClipScore[]): ClipScore {
-  if (tags.length === 0) {
-    return { label: 'unknown', score: 0 };
-  }
-
-  // Sort by score in descending order and return the label of the highest score
-  return tags.reduce((best, current) => (current.score > best.score ? current : best));
-}

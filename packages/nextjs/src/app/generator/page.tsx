@@ -20,31 +20,30 @@ import { cn } from '@/utils/cn.ts';
 import { validateGeneratorForm } from '@/utils/formValidation.ts';
 import { compressImage } from '@/utils/imageCompression.ts';
 
-
 function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement {
-  // —— State for image upload/compression —— //
+  // --- State for image upload/compression --- //
   const [rawImageFile, setRawImageFile] = useState<File | undefined>();
   const [compressedImage, setCompressedImage] = useState<File | undefined>();
 
-  // —— State for audio upload or recording —— //
+  // --- State for audio upload or recording --- //
   const [audioFile, setAudioFile] = useState<File | undefined>();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [_recordingBlob, setRecordingBlob] = useState<Blob | undefined>();
 
-  // —— State for server response —— //
+  // --- State for server response --- //
   const [responseData, setResponseData] = useState<ProfileResponse | null>(null);
 
-  // —— State for editable summary —— //
+  // --- State for editable summary --- //
   const [editableSummary, setEditableSummary] = useState<string>('');
 
-  // —— State for language selection —— //
+  // --- State for language selection --- //
   const [selectedLanguage, setSelectedLanguage] = useState<string>('English');
 
-  // —— State for form errors —— //
+  // --- State for form errors --- //
   const [formError, setFormError] = useState<string | null>(null);
 
-  // —— State for disclosure panels —— //
+  // --- State for disclosure panels --- //
   const [isImageUploadOpen, setIsImageUploadOpen] = useState<boolean>(true);
   const [isAudioDescriptionOpen, setIsAudioDescriptionOpen] = useState<boolean>(true);
   const [isLanguageSelectionOpen, setIsLanguageSelectionOpen] = useState<boolean>(true);
@@ -52,7 +51,6 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
 
   // Ref for resetting file input TODO: Remove if not needed
   const fileInputRef = useRef<HTMLInputElement>(null);
-
 
   /**
    * 1) Handle image selection from disk and compress it client‐side.
@@ -99,11 +97,11 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
     setIsRecording((prev) => !prev);
   }
   function onData(_recordedChunk: Blob): void {
-    // We could process streaming chunks here; for MVP we just ignore intermediate data
+    // TODO: Could process streaming chunks here; for MVP will just ignore intermediate data
   }
 
   function onStop(recordedData: { blob: Blob }): void {
-    // Once recording stops, we get a Blob. Wrap it in a File so we can attach to FormData
+    // Once recording stops, it produces a Blob. Wrap it in a File so it can be attached to FormData
     setRecordingBlob(recordedData.blob);
     const fileFromBlob = new File([recordedData.blob], 'recorded_audio.webm', {
       type: recordedData.blob.type,
@@ -118,9 +116,9 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
   async function handleSubmit(): Promise<void> {
     setIsGenerating(true);
     setResponseData(null);
-    
+
     // Close all disclosure panels when generation starts
-    setDisclosureKey(prev => prev + 1);
+    setDisclosureKey((prev) => prev + 1);
 
     // Validate form data
     const validation = validateGeneratorForm({
@@ -135,7 +133,7 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
       return;
     }
 
-    // Build FormData: keys must match what our API will expect ("image", "audio", & "language")
+    // Build FormData: keys must match what the API will expect ("image", "audio", & "language")
     const formData = new FormData();
     if (compressedImage) formData.append('image', compressedImage);
     if (audioFile) formData.append('audio', audioFile);
@@ -178,110 +176,115 @@ function GeneratorPageInner({ onReset }: { onReset: () => void }): ReactElement 
 
           {/* Form upload section */}
           <div className="flex-1 space-y-8">
-          <section className="flex flex-col gap-2" aria-labelledby="generator-heading">
-            <H1 id="generator-heading">Create a custom profile bio for your pet</H1>
-            <p className="text-gray-600 mb-4">
-              Well-written profiles help pets find their forever homes. Upload a photo of the animal and a voice recording describing them, and the app will generate a professionally-written profile bio in the selected language. 
-            </p>
-          </section>
+            <section className="flex flex-col gap-2" aria-labelledby="generator-heading">
+              <H1 id="generator-heading">Create a custom profile bio for your pet</H1>
+              <p className="text-gray-800 mb-4">
+                Well-written profiles help pets find their forever homes. Upload a photo of the animal and a voice
+                recording describing them, and the app will generate a professionally-written profile bio in the
+                selected language.
+              </p>
+            </section>
 
-          {/* Tips card - mobile only (below intro) */}
-          <aside className="md:hidden" aria-label="Tips and guidance">
-            <Tips />
-          </aside>
+            {/* MOBILE Tips card */}
+            <aside className="md:hidden" aria-label="Tips and guidance">
+              <Tips />
+            </aside>
 
-          {formError && (
-            <div className="rounded-md bg-red-50 p-4 border border-red-200">
-              <div className="text-sm text-red-700">{formError}</div>
-              <button 
-                onClick={() => setFormError(null)}
-                className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+            {formError && (
+              <div className="rounded-md bg-red-50 p-4 border border-red-200">
+                <div className="text-sm text-red-700">{formError}</div>
+                <button
+                  onClick={() => setFormError(null)}
+                  className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+                >
+                  Dismiss
+                </button>
+              </div>
+            )}
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                void handleSubmit();
+              }}
+              className="space-y-6"
+            >
+              <DisclosurePanelComponent
+                title="Image Upload"
+                stepNumber={1}
+                description="Upload a well-lit image of the animal you want to create a profile for."
+                isOpen={disclosureKey === 0 ? isImageUploadOpen : false}
+                onToggle={setIsImageUploadOpen}
+                className="bg-white rounded-lg shadow-md p-6 mb-6"
+                key={`image-${disclosureKey}`}
               >
-                Dismiss
-              </button>
-            </div>
-          )}
+                <ImageUploadSection
+                  rawImageFile={rawImageFile}
+                  compressedImage={compressedImage}
+                  fileInputRef={fileInputRef}
+                  onImageChange={handleImageChange}
+                />
+              </DisclosurePanelComponent>
 
-          <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} className="space-y-6">
-          <DisclosurePanelComponent
-            title="Image Upload"
-            stepNumber={1}
-            description="Upload a well-lit image of the animal you want to create a profile for."
-            isOpen={disclosureKey === 0 ? isImageUploadOpen : false}
-            onToggle={setIsImageUploadOpen}
-            className="bg-white rounded-lg shadow-md p-6 mb-6"
-            key={`image-${disclosureKey}`}
-          >
-            <ImageUploadSection
-              rawImageFile={rawImageFile}
-              compressedImage={compressedImage}
-              fileInputRef={fileInputRef}
-              onImageChange={handleImageChange}
-            />
-          </DisclosurePanelComponent>
+              <DisclosurePanelComponent
+                title="Audio Description"
+                stepNumber={2}
+                description="Record or provide an audio clip describing the animal. For faster results, keep the clip short (15-30 seconds)."
+                isOpen={disclosureKey === 0 ? isAudioDescriptionOpen : false}
+                onToggle={setIsAudioDescriptionOpen}
+                className="bg-white rounded-lg shadow-md p-6 mb-6"
+                key={`audio-${disclosureKey}`}
+              >
+                <AudioSection
+                  audioFile={audioFile}
+                  isRecording={isRecording}
+                  onAudioUploadChange={handleAudioUploadChange}
+                  onToggleRecording={toggleRecording}
+                  onStop={onStop}
+                  onData={onData}
+                />
+              </DisclosurePanelComponent>
 
-          <DisclosurePanelComponent
-            title="Audio Description"
-            stepNumber={2}
-            description="Record or provide an audio clip describing the animal. For faster results, keep the clip short (15-30 seconds)."
-            isOpen={disclosureKey === 0 ? isAudioDescriptionOpen : false}
-            onToggle={setIsAudioDescriptionOpen}
-            className="bg-white rounded-lg shadow-md p-6 mb-6"
-            key={`audio-${disclosureKey}`}
-          >
-            <AudioSection
-              audioFile={audioFile}
-              isRecording={isRecording}
-              onAudioUploadChange={handleAudioUploadChange}
-              onToggleRecording={toggleRecording}
-              onStop={onStop}
-              onData={onData}
-            />
-          </DisclosurePanelComponent>
+              <DisclosurePanelComponent
+                title="Language Selection"
+                stepNumber={3}
+                description="Choose the language for the generated profile summary."
+                isOpen={disclosureKey === 0 ? isLanguageSelectionOpen : false}
+                onToggle={setIsLanguageSelectionOpen}
+                className="bg-white rounded-lg shadow-md p-6 mb-6"
+                key={`language-${disclosureKey}`}
+              >
+                <LanguageSelector selectedLanguage={selectedLanguage} onLanguageChange={setSelectedLanguage} />
+              </DisclosurePanelComponent>
 
-          <DisclosurePanelComponent
-            title="Language Selection"
-            stepNumber={3}
-            description="Choose the language for the generated profile summary."
-            isOpen={disclosureKey === 0 ? isLanguageSelectionOpen : false}
-            onToggle={setIsLanguageSelectionOpen}
-            className="bg-white rounded-lg shadow-md p-6 mb-6"
-            key={`language-${disclosureKey}`}
-          >
-            <LanguageSelector
-              selectedLanguage={selectedLanguage}
-              onLanguageChange={setSelectedLanguage}
-            />
-          </DisclosurePanelComponent>
+              {/* --- SUBMIT BUTTON --- */}
+              <div className="flex justify-center gap-4">
+                <PrimaryButton
+                  onClick={handleSubmit}
+                  disabled={!canGenerate}
+                  icon={isGenerating ? <LoadingSpinner /> : undefined}
+                  text={isGenerating ? 'Generating...' : 'Generate profile'}
+                  className={cn(isGenerating && 'bg-brand-pink-dark cursor-default')}
+                />
 
-          {/* —— SUBMIT BUTTON —— */}
-          <div className="flex justify-center gap-4">
-            <PrimaryButton
-              onClick={handleSubmit}
-              disabled={!canGenerate}
-              icon={isGenerating ? <LoadingSpinner /> : undefined}
-              text={isGenerating ? 'Generating...' : 'Generate profile'}
-              className={cn(isGenerating && 'bg-brand-pink-dark cursor-default')}
-            />
+                <SecondaryButton
+                  // Clicking Reset causes the keyed remount >> clears all internal state
+                  onClick={onReset}
+                  text="Reset"
+                  icon={<ResetIcon />}
+                  disabled={isGenerating} // avoid mid-request resets
+                  className="border-gray-300"
+                />
+              </div>
 
-            <SecondaryButton
-                // Clicking Reset causes the keyed remount → clears all internal state
-                onClick={onReset}
-                text="Reset"
-                icon={<ResetIcon />}
-                disabled={isGenerating} // avoid mid-request resets
-                className="border-gray-300"
+              {isGenerating && <div className="mt-6 border-t pt-4 space-y-4">Generating profile ...</div>}
+
+              <ResultsSection
+                responseData={responseData}
+                editableSummary={editableSummary}
+                onSummaryChange={setEditableSummary}
               />
-          </div>
-
-          {isGenerating && <div className="mt-6 border-t pt-4 space-y-4">Generating profile ...</div>}
-
-          <ResultsSection 
-            responseData={responseData} 
-            editableSummary={editableSummary}
-            onSummaryChange={setEditableSummary}
-          />
-          </form>
+            </form>
           </div>
         </div>
       </main>

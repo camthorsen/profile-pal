@@ -176,7 +176,7 @@ describe('isValidLanguage', () => {
   it('rejects unsupported languages', () => {
     expect(isValidLanguage('Klingon')).toBe(false);
     expect(isValidLanguage('')).toBe(false);
-    expect(isValidLanguage('english')).toBe(false); // case sensitive
+    expect(isValidLanguage('english')).toBe(false); // case-sensitive
   });
 
   it('supports all languages in SUPPORTED_LANGUAGES', () => {

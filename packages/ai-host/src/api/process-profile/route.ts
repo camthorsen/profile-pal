@@ -1,19 +1,13 @@
 import { Hono } from 'hono';
-import { type ClipScore, type ProfileResponse } from '../../types.ts';
 
 import { getClipScoresFromImage } from '../../lib/getClipScoresFromImage.ts';
-
 import { streamToTempFile } from '../../lib/stream-to-tempfile.ts';
+import { type ClipScore, type ProfileResponse } from '../../types.ts';
 import { transcribeWithDockerWhisper } from '../audio/transcribe/transcribeWithDockerWhisper.js';
 import { summarizeWithOpenAI } from '../text/summarize/summarizeWithOpenAi.js';
 
 const app = new Hono();
 
-// updated signature: (transcript, labels?, options?)
-export async function summarizeHandler(transcript: string, labels?: string[], options?: { outputLanguage?: string }): Promise<string> {
-  console.info('🤖 Using OpenAI for text summarization');
-  return summarizeWithOpenAI(transcript, labels, options);
-}
 
 app.post(async (context) => {
   const contentType = context.req.header('content-type');
@@ -44,7 +38,7 @@ app.post(async (context) => {
     const labels = clipScores.map(({ label }) => label);
 
     // Step 3: Generate summary using LLM
-    const summary = await summarizeHandler(transcript, labels, { outputLanguage: languageString });
+    const summary = await summarizeWithOpenAI(transcript, labels, { outputLanguage: languageString });
 
     const response: ProfileResponse = {
       clipScores,
@@ -52,10 +46,10 @@ app.post(async (context) => {
       transcript,
       summary,
     };
-    
+
     return context.json(response);
   } catch (error: unknown) {
-    console.error('❌ Failed to process profile:', error);
+    console.error('ERROR: Failed to process profile:', error);
     return context.text('Internal server error', 500);
   }
 });

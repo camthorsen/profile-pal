@@ -1,35 +1,23 @@
 /**
- * summarizeWithOpenAi.ts
- *
  * OpenAI Responses API — two-stage flow:
  *   1) gpt-5-nano  → extract schema-bound facts (fast, low cost, grounded)
  *   2) gpt-5-mini  → write a 120–180 word adoption bio (higher-quality prose)
  *
- * Reliability upgrades:
- *   - Lazy client init so .env is loaded before reading OPENAI_API_KEY
- *   - Structured outputs via `text.format: { type: 'json_schema', ... }`
- *   - Robust readers: prefer `output_parsed` for JSON; else walk `output[].content[].text`
- *   - Continuation helper: uses `previous_response_id` if `status === "incomplete"` due to `max_output_tokens`
- *   - Lower `reasoning.effort` + `text.verbosity` so tokens go to visible output (not hidden reasoning)
- *   - No `temperature`/`top_p` knobs (unsupported on some GPT-5 models)
- *   - Optional debug logs with `DEBUG_OPENAI=1`
- *
  * Inputs:
- *   - transcript: raw Whisper transcript (verbatim)
- *   - labels?: optional CLIP/user labels like ["cat", "short haired"]
+ *   - transcript: raw Whisper transcript
+ *   - labels?: optional CLIP/user labels, e.g., ["cat", "short haired"]
  *
- * Output:
- *   - Polished adoption profile bio text
+ * Output: Final profile bio text
  */
 
 import { isObject } from '@williamthorsen/toolbelt.objects';
 import OpenAI from 'openai';
 
-/* ─────────────────────────────── Env / Client ────────────────────────────── */
+/** --- Env / Client --- */
 
 let cachedClient: OpenAI | undefined;
 
-/** Lazy-initialize the OpenAI SDK so your dotenv loader has run first. */
+// Lazy-initialize the OpenAI SDK so the dotenv loader has run first
 function getOpenAI(): OpenAI {
   if (cachedClient) return cachedClient;
   const apiKey = process.env.OPENAI_API_KEY;
@@ -42,13 +30,13 @@ function getOpenAI(): OpenAI {
 
 const DEBUG = process.env.DEBUG_OPENAI === '1';
 
-/* ──────────────────────────────── Data model ─────────────────────────────── */
+/** --- Data model --- */
 
 export interface AnimalFacts {
   name?: string;
   species?: string; // e.g., "cat", "dog"
-  age?: string; // free text like "2 years"
-  size?: string; // "small" | "medium" | "large" | free text
+  age?: string;
+  size?: string;
   coat_length?: 'short' | 'medium' | 'long' | string;
   likes?: string[];
   dislikes?: string[];
@@ -70,7 +58,7 @@ function coerceFacts(v: unknown): AnimalFacts {
   const str = (x: unknown) => (typeof x === 'string' && x.trim().length > 0 ? x.trim() : undefined);
   const arr = (x: unknown) => (isStringArray(x) && x.length > 0 ? x : undefined);
 
-  const rec: any = v; // using 'any' here avoids type assertions on every field
+  const rec: any = v; // FIXME: Try to avoid `any`
 
   const name = str(rec.name);
   if (name) out.name = name;
@@ -108,7 +96,7 @@ function coerceFacts(v: unknown): AnimalFacts {
   return out;
 }
 
-/* ───────────────────────────── Labels → hints ───────────────────────────── */
+/** --- Convert labels to hints --- */
 
 function norm(label: string): string {
   return label
@@ -165,12 +153,12 @@ function deriveSpeciesAndCoat(labels?: string[]): { species?: string; coat_lengt
   return result;
 }
 
-/* ───────────────────────── Structured JSON schema ───────────────────────── */
+/** --- Structured JSON schema --- */
 
 /**
  * For strict structured outputs, the schema must include `required` listing all keys.
- * We allow `null` so the model can return every key while marking unknowns as `null`.
- * We drop null/empty fields in `coerceFacts`.
+ * I allow `null` so the model can return every key while marking unknowns as `null`.
+ * I then drop null/empty fields in `coerceFacts`.
  */
 const ANIMAL_FACTS_SCHEMA = {
   type: 'object',
@@ -203,10 +191,12 @@ const ANIMAL_FACTS_SCHEMA = {
   ],
 };
 
-/* ─────────────────────── Output readers + utilities ─────────────────────── */
+/** --- Output readers + utilities --- */
 
 /** Build AI directive based on selected language. */
-interface GenerateOptions { outputLanguage?: 'auto' | string }
+interface GenerateOptions {
+  outputLanguage?: 'auto' | string;
+}
 
 function buildLanguageDirective(options?: GenerateOptions): string {
   if (options?.outputLanguage === 'auto') {
@@ -280,7 +270,6 @@ async function createWithContinuation(baseOpts: Record<string, unknown>, maxCont
       // Keep safe knobs only:
       reasoning: baseOpts.reasoning,
       text: baseOpts.text,
-      // Do NOT pass temperature/top_p; some models reject them
       max_output_tokens: typeof baseOpts.max_output_tokens === 'number' ? baseOpts.max_output_tokens : 512,
     } as any);
 
@@ -290,7 +279,7 @@ async function createWithContinuation(baseOpts: Record<string, unknown>, maxCont
   return res;
 }
 
-/* ────────────────────────────── Stage A (nano) ───────────────────────────── */
+/** --- Stage A (GPT-nano) --- */
 
 /**
  * Extract strictly-typed facts from transcript (+ optional labels).
@@ -298,7 +287,7 @@ async function createWithContinuation(baseOpts: Record<string, unknown>, maxCont
  * - Continuation logic avoids silent truncation.
  */
 async function extractFacts(transcript: string, labels?: string[]): Promise<AnimalFacts> {
-  if (typeof transcript !== 'string' || transcript.trim().length === 0) {
+  if (transcript.trim().length === 0) {
     throw new Error('Transcript is required.');
   }
 
@@ -333,13 +322,12 @@ async function extractFacts(transcript: string, labels?: string[]): Promise<Anim
       verbosity: 'low',
     },
     reasoning: { effort: 'low' },
-    // No temperature/top_p here
-    max_output_tokens: 512, // slightly more headroom than 400
+    max_output_tokens: 512,
   });
 
   if (DEBUG) {
-    const usage = res && typeof res === 'object' && 'usage' in res ? (res).usage : undefined;
-    console.log('[OpenAI] Stage A status:', (res)?.status, 'usage:', usage);
+    const usage = res && typeof res === 'object' && 'usage' in res ? res.usage : undefined;
+    console.log('[OpenAI] Stage A status:', res?.status, 'usage:', usage);
   }
 
   const parsed = collectParsed(res);
@@ -349,7 +337,7 @@ async function extractFacts(transcript: string, labels?: string[]): Promise<Anim
   return {};
 }
 
-/* ───────────────────────────── Stage B (mini) ───────────────────────────── */
+/** --- Stage B (GPT-mini) --- */
 
 /**
  * Compose a 120–180 word adoption bio.
@@ -366,7 +354,7 @@ async function composeProfile(
   const languageDirective = buildLanguageDirective(options);
 
   const system = [
-    'You write short, empathetic adoption bios for shelters.',
+    'As a professional content writer, you write short, empathetic adoption bios for animal shelters.',
     'Voice: warm, professional, friendly. Length: 120–180 words.',
     'Prefer FACTS_JSON. Do not invent details.',
     'If FACTS_JSON is sparse, you may carefully incorporate details from SOURCE_TRANSCRIPT, but never contradict it.',
@@ -388,7 +376,6 @@ async function composeProfile(
     ],
     text: { verbosity: 'low' },
     reasoning: { effort: 'low' },
-    // No temperature/top_p here
     max_output_tokens: 640, // give the writer more room than the extractor
   });
 
@@ -404,13 +391,13 @@ async function composeProfile(
     .trim();
 }
 
-/* ─────────────────────────────── Public API ─────────────────────────────── */
+/** --- Public API --- */
 
 /**
  * summarizeWithOpenAI
  *
  * Generates a polished bio. If extractor omits deterministic hints (species/coat)
- * that are clear from labels, we merge them before writing.
+ * that are clear from labels, those get merged before writing.
  */
 export async function summarizeWithOpenAI(
   transcript: string,
@@ -430,7 +417,7 @@ export async function summarizeWithOpenAI(
   // Stage B: compose final profile
   let profile = await composeProfile(facts, transcript, labels, options);
 
-  // Safety net: if somehow empty, fall back to single-pass generation.
+  // Safety precaution >> if somehow empty, fall back to single-pass generation.
   if (!profile) {
     const languageDirective = buildLanguageDirective(options);
 
@@ -458,7 +445,6 @@ export async function summarizeWithOpenAI(
       ],
       text: { verbosity: 'low' },
       reasoning: { effort: 'low' },
-      // No temperature/top_p
       max_output_tokens: 640,
     });
     profile = collectText(fallback).trim();

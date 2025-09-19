@@ -7,6 +7,8 @@ interface H1Props {
 
 export function H1({ children, id }: H1Props): ReactElement {
   return (
-    <h1 id={id} className="text-2xl font-bold">{children}</h1>
+    <h1 id={id} className="text-2xl font-bold text-gray-900">
+      {children}
+    </h1>
   );
 }

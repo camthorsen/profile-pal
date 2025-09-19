@@ -13,7 +13,7 @@ function classNames(...classes: string[]): string {
 
 export function TheNavBar(): ReactElement {
   const pathname = usePathname();
-  
+
   const navigation: NavLink[] = [
     { name: 'Home', href: '/' },
     { name: 'Bio Generator', href: '/generator' },
@@ -29,7 +29,7 @@ export function TheNavBar(): ReactElement {
             href={item.href}
             className={classNames(
               isCurrent ? 'bg-neutral-300 text-gray-900' : 'hover:bg-brand-orange-light',
-              'rounded-sm px-3 py-2 text-sm font-medium',
+              'rounded-sm px-3 py-2 text-sm font-medium text-gray-800',
             )}
             aria-current={isCurrent ? 'page' : undefined}
           >
