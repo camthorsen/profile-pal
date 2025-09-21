@@ -20,6 +20,8 @@ export interface LanguageSelectorProps {
 const DEFAULT_LANGUAGES: LanguageOption[] = [
   { value: 'English', label: 'English' },
   { value: 'French', label: 'Français' },
+  { value: 'German', label: 'Deutsch' },
+  { value: 'Portuguese', label: 'Português' },
   { value: 'Spanish', label: 'Español' },
 ];
 
