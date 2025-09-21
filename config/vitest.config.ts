@@ -13,6 +13,7 @@ export const baseConfig = defineConfig({
     },
     exclude: ['**/node_modules/**'],
     watch: false, // don't enter watch mode unless the `--watch` flag is passed
+    passWithNoTests: true, // don't fail when no test files are found
   },
 });
 
