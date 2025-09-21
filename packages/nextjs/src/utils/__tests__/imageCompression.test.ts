@@ -1,12 +1,12 @@
+import imageCompression from 'browser-image-compression';
 import { describe, expect, it, vi } from 'vitest';
-import { compressImage, formatFileSize } from '../imageCompression';
+
+import { compressImage, formatFileSize } from  '../imageCompression.ts';
 
 // Mock the browser-image-compression library
 vi.mock('browser-image-compression', () => ({
   default: vi.fn(),
 }));
-
-import imageCompression from 'browser-image-compression';
 
 // Mock File constructor for tests
 class MockFile {
@@ -43,8 +43,8 @@ class MockBlob {
 }
 
 // Replace globals with test mocks
-global.File = MockFile as any;
-global.Blob = MockBlob as any;
+globalThis.File = MockFile as any;
+globalThis.Blob = MockBlob as any;
 
 describe('compressImage', () => {
   it('compresses image successfully', async () => {
@@ -54,7 +54,7 @@ describe('compressImage', () => {
     // Mock successful compression
     (imageCompression as any).mockResolvedValue(compressedBlob);
 
-    const result = await compressImage(originalFile as File);
+    const result = await compressImage(originalFile);
 
     expect(result).toEqual({
       compressedFile: expect.any(File),
@@ -77,25 +77,20 @@ describe('compressImage', () => {
     (imageCompression as any).mockResolvedValue(compressedBlob);
 
     const customOptions = {
-      maxSizeMB: 1.0,
+      maxSizeMB: 1,
       maxWidthOrHeight: 1200,
       useWebWorker: false,
     };
 
-    await compressImage(file as File, customOptions);
+    await compressImage(file, customOptions);
 
     expect(imageCompression).toHaveBeenCalledWith(file, customOptions);
-  });
-
-  it('throws error for null/undefined file', async () => {
-    await expect(compressImage(null as any)).rejects.toThrow('File is required for compression');
-    await expect(compressImage(undefined as any)).rejects.toThrow('File is required for compression');
   });
 
   it('throws error for non-image file', async () => {
     const textFile = new File(['content'], 'test.txt', { type: 'text/plain' });
 
-    await expect(compressImage(textFile as File)).rejects.toThrow('File must be an image');
+    await expect(compressImage(textFile)).rejects.toThrow('File must be an image');
   });
 
   it('handles compression failure by returning original file', async () => {
@@ -106,7 +101,7 @@ describe('compressImage', () => {
 
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const result = await compressImage(originalFile as File);
+    const result = await compressImage(originalFile);
 
     expect(result).toEqual({
       compressedFile: originalFile,

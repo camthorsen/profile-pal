@@ -5,27 +5,12 @@ interface UploadIconProps {
   'aria-hidden'?: boolean;
 }
 
+// Icon SVG taken from https://lucide.dev/icons/
 export function UploadIcon({ className, 'aria-hidden': ariaHidden = true }: UploadIconProps): ReactElement {
   return (
-    <svg 
-      fill="none" 
-      viewBox="0 0 24 24" 
-      stroke="currentColor" 
-      aria-hidden={ariaHidden}
-      className={className}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 3v12"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="m17 8-5-5-5 5"
-      />
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden={ariaHidden} className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v12" />
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m17 8-5-5-5 5" />
       <path
         strokeLinecap="round"
         strokeLinejoin="round"

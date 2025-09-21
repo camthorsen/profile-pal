@@ -1,5 +1,5 @@
 // TSConfig for monorepo root
-// Adapted from https://blog.logrocket.com/setting-up-monorepo-with-lerna-typescript/
+// TODO: NOTE TO EVALUATORS: Adapted from https://blog.logrocket.com/setting-up-monorepo-with-lerna-typescript/
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {

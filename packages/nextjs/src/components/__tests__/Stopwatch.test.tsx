@@ -1,6 +1,7 @@
-import { render, screen, cleanup } from '@testing-library/react';
-import { describe, expect, it, afterEach } from 'vitest';
-import { Stopwatch } from '../Stopwatch';
+import { cleanup,render, screen } from '@testing-library/react';
+import { afterEach,describe, expect, it } from 'vitest';
+
+import { Stopwatch } from '../Stopwatch.tsx';
 
 describe('Stopwatch', () => {
   afterEach(() => {

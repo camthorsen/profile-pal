@@ -19,8 +19,8 @@ export function parseTimeToSeconds(timeString: string): number {
     throw new Error('Invalid time format. Expected MM:SS');
   }
   
-  const minutes = parseInt(match[1]!, 10);
-  const seconds = parseInt(match[2]!, 10);
+  const minutes = Number.parseInt(match[1]!, 10);
+  const seconds = Number.parseInt(match[2]!, 10);
   
   if (seconds >= 60) {
     throw new Error('Seconds must be less than 60');

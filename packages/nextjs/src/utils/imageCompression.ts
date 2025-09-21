@@ -17,9 +17,6 @@ export async function compressImage(
   file: File,
   options: ImageCompressionOptions = {}
 ): Promise<CompressionResult> {
-  if (!file) {
-    throw new Error('File is required for compression');
-  }
 
   if (!file.type.startsWith('image/')) {
     throw new Error('File must be an image');

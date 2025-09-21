@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { formatTime, formatDuration, parseTimeToSeconds } from '../timeFormat';
+
+import { formatDuration, formatTime, parseTimeToSeconds } from '../timeFormat.ts';
 
 describe('formatTime', () => {
   it('formats zero seconds', () => {
@@ -29,12 +30,12 @@ describe('formatTime', () => {
 
 describe('formatDuration', () => {
   it('formats milliseconds to time string', () => {
-    expect(formatDuration(30000)).toBe('00:30');
-    expect(formatDuration(125000)).toBe('02:05');
+    expect(formatDuration(30_000)).toBe('00:30');
+    expect(formatDuration(125_000)).toBe('02:05');
   });
 
   it('handles fractional milliseconds', () => {
-    expect(formatDuration(30500)).toBe('00:30');
+    expect(formatDuration(30_500)).toBe('00:30');
   });
 });
 

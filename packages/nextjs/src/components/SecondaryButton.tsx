@@ -26,7 +26,7 @@ export function SecondaryButton({
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center px-5 py-2 rounded-full text-sm font-medium text-neutral-700 bg-gray-50 border border-neutral-700 cursor-pointer hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:text-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      className={`inline-flex items-center px-5 py-2 rounded-full text-sm font-medium text-neutral-800 bg-gray-50 border border-neutral-700 cursor-pointer hover:bg-gray-100 hover:text-gray-900 focus:z-10 focus:ring-4 focus:ring-gray-100 focus:text-gray-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
       type={type}
       disabled={disabled}
     >
@@ -38,4 +38,4 @@ export function SecondaryButton({
       )}
     </button>
   );
-} 
+}

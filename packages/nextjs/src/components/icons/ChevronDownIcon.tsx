@@ -5,12 +5,13 @@ interface ChevronDownIconProps {
   'aria-hidden'?: boolean;
 }
 
+// Icon SVG taken from https://lucide.dev/icons/
 export function ChevronDownIcon({ className, 'aria-hidden': ariaHidden = true }: ChevronDownIconProps): ReactElement {
   return (
-    <svg 
-      fill="none" 
-      viewBox="0 0 24 24" 
-      stroke="currentColor" 
+    <svg
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"

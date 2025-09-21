@@ -13,7 +13,7 @@ export async function transcribeWithDockerWhisper(audioFile: File): Promise<stri
     });
 
     if (!response.ok) {
-      throw new Error(`Whisper service responded with ${response.status}: ${response.statusText}`);
+      throw new Error(`ERROR: Whisper service responded with ${response.status}: ${response.statusText}`);
     }
 
     const result: unknown = await response.json();
@@ -21,7 +21,7 @@ export async function transcribeWithDockerWhisper(audioFile: File): Promise<stri
     assert(typeof result.transcript === 'string');
     return result.transcript;
   } catch (error: unknown) {
-    console.error('❌ Whisper transcription failed:', error);
+    console.error('ERROR: Whisper transcription failed:', error);
     throw error;
   }
 }

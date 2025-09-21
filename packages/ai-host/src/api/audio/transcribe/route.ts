@@ -37,7 +37,7 @@ app.post(async (context) => {
     assert(isObject(result));
     return context.json({ transcript: result.transcript });
   } catch (error: unknown) {
-    console.error('❌ Whisper transcription failed:', error);
+    console.error('ERROR: Whisper transcription failed:', error);
     return context.text('Internal error running Whisper', 500);
   }
 });

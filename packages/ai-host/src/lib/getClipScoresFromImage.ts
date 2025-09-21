@@ -20,15 +20,9 @@ export async function getClipScoresFromImage(filePath: string): Promise<ClipScor
     throw new Error(`Request failed: ${response.status} ${response.statusText}\n${text}`);
   }
 
-  return (await response.json()) as ClipScore[];
-}
-
-export function getBestClipScore(tags: ClipScore[]): ClipScore {
-  if (tags.length === 0) {
-    return { label: 'unknown', score: 0 };
+  const result = await response.json();
+  if (!Array.isArray(result)) {
+    throw new TypeError('Expected array response from CLIP service');
   }
-
-  // Sort by score in descending order and return the label of the highest score
-  return tags.reduce((best, current) => (current.score > best.score ? current : best));
+  return result;
 }
-

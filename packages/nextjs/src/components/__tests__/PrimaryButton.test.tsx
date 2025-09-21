@@ -1,6 +1,7 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
-import { describe, expect, it, vi, afterEach } from 'vitest';
-import { PrimaryButton } from '../PrimaryButton';
+import { cleanup,fireEvent, render, screen } from '@testing-library/react';
+import { afterEach,describe, expect, it, vi } from 'vitest';
+
+import { PrimaryButton } from '../PrimaryButton.tsx';
 
 describe('PrimaryButton', () => {
   afterEach(() => {

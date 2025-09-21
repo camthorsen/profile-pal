@@ -64,7 +64,7 @@ function DisclosureContent({
         </div>
       </DisclosureButton>
       
-      <div className="overflow-hidden">
+      <div className="overflow-visible">
         <DisclosurePanel
           transition
           className="origin-top transition duration-200 ease-out data-closed:-translate-y-6 data-closed:opacity-0"

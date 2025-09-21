@@ -1,6 +1,7 @@
 'use client';
 
 import { type ReactElement, useEffect, useRef, useState } from 'react';
+
 import { formatTime } from '@/utils/timeFormat.ts';
 
 interface StopwatchProps {
@@ -23,7 +24,7 @@ export function Stopwatch({ isActive }: StopwatchProps): ReactElement {
   // Handle timer start/stop based on isActive prop
   useEffect(() => {
     if (isActive) {
-      // Starting timer - clear any existing timer first, then start counting
+      // Starting timer >> clear any existing timer first, then start counting
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
       }
@@ -48,9 +49,7 @@ export function Stopwatch({ isActive }: StopwatchProps): ReactElement {
 
   return (
     <div className="flex text-gray-900">
-      <span className="text-lg font-mono font-bold">
-        {formatTime(time)}
-      </span>
+      <span className="text-lg font-mono font-bold">{formatTime(time)}</span>
     </div>
   );
 }

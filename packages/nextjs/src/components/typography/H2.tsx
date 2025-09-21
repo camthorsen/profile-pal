@@ -8,7 +8,5 @@ interface H2Props {
 }
 
 export function H2({ children, className }: H2Props): ReactElement {
-  return (
-    <h2 className={cn("text-lg font-bold", className)}>{children}</h2>
-  );
+  return <h2 className={cn('text-lg font-bold text-gray-900', className)}>{children}</h2>;
 }

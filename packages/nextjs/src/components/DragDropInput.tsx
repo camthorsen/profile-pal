@@ -29,7 +29,7 @@ export function DragDropInput({
     <label className="relative block w-full rounded-lg border-2 border-dashed border-gray-300 text-center hover:border-gray-400 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-hidden">
       <input
         accept={accept}
-        className="sr-only"
+        className="sr-only-file"
         type="file"
         ref={fileInputRef}
         onChange={onFileChange}

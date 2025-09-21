@@ -1,61 +1,40 @@
-# Pet Profile Generator: Monorepo
+# Profile Pal (Pet Profile Generator): Monorepo
 
-# Command sequence for evaluators
+## Prerequisites
 
-FIXME: To be updated
+### Docker Setup
 
-## — 1: Python side —
+This project requires Docker to run the AI services (Whisper and CLIP models). You'll need to install and start Docker before running the development environment.
 
-cd packages/api
+#### Install Docker
 
-### 1.1: Install Poetry dependencies
+**macOS:**
 
-poetry install
+1. Download [Docker Desktop for Mac](https://docs.docker.com/desktop/mac/install/)
+2. Install and start Docker Desktop
+3. Verify installation: `docker --version`
 
-### 1.2: (If no GPU) Install CPU‐only PyTorch
+**Windows:**
 
-poetry run pip install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-(This one didn't work for me, so I had to install the CPU version of PyTorch manually:)
+1. Download [Docker Desktop for Windows](https://docs.docker.com/desktop/windows/install/)
+2. Install and start Docker Desktop
+3. Verify installation: `docker --version`
 
-Also did this:
+#### Verify Docker is Running
 
-```bash
-pip install --upgrade torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+Before starting the project, you have to ensure Docker is running:
+
+```shell
+docker info
 ```
 
-```bash
-$ poetry add torch --platform macosx_10_9_x86_64
-```
+If this command fails, start Docker Desktop or the Docker service.
 
-### 1.3: Download all model weights (~4.8 GB)
-
-poetry run python download_models.py
-
-### 1.4: Start the FastAPI server
-
-poetry run uvicorn api_app.main:app --host 0.0.0.0 --port 8000
-
-(Leave this terminal open; it’s serving /transcribe, /clip_tags, /summarize)
-
-## — 2: Next.js side —
-
-cd packages/nextjs
-
-### 2.1: Install pnpm dependencies
-
-pnpm install
-
-### 2.2: Start Next.js dev server
-
-pnpm dev
-
-Now open http://localhost:5181/ in your browser.
-
-## Getting started
+### Node.js and pnpm Setup
 
 This project uses [pnpm](https://github.com/pnpm/pnpm) and NodeJS. The versions of each are set in `.tool-versions`.
 
-If you don't have PNPM installed, it is recommended that you use the [ASDF runtime manager](https://asdf-vm.com/) to install it. For alternative methods, see the [pnpm installation instructions](https://pnpm.io/installation).
+If you don't have PNPM installed, you can use the [ASDF runtime manager](https://asdf-vm.com/) to install it. For alternative methods, see the [pnpm installation instructions](https://pnpm.io/installation).
 
 ```shell
 # Install ASDF runtime-version manager
@@ -75,7 +54,37 @@ asdf plugin add nodejs
 asdf install nodejs 18.12.1
 ```
 
-## Scripts
+## Development Scripts
+
+### Quick Start
+
+First run `$ pnpm install`
+
+Then, start all services (AI host, Next.js app, and Docker services):
+
+```shell
+pnpm run start
+```
+
+You can now view the app at http://localhost:5181/ in your browser.
+
+**Note:** The first time you start the project, Docker will download tAI models (Whisper-tiny and CLIP, about 1.2GB total), which may take 1-2 minutes.
+
+**Services started:**
+
+- AI Host: http://localhost:8787
+- Next.js App: http://localhost:5181
+- Docker services: pyclip, pywhisper
+
+### Stop services
+
+Stop all services:
+
+```shell
+pnpm run stop
+```
+
+### Available Scripts
 
 Install dependencies (this script has the same effect regardless of where it is run in the project):
 
@@ -83,13 +92,9 @@ Install dependencies (this script has the same effect regardless of where it is 
 pnpm install
 ```
 
----
+#### Code checks
 
-These commands can be run at the project level or at the level of an individual package (i.e., the simulator API or the Svelte app).
-
-To run at the project level, run the command from the project root. To run at a package level, change to the package's directory. Example: `cd packages/svelte`.
-
-Run all code checks:
+Run ALL code checks (typecheck, linting, unit tests):
 
 ```shell
 pnpm run check
@@ -101,32 +106,33 @@ Run the typechecker
 pnpm run typecheck
 ```
 
+Run prettier:
+
+```shell
+pnpm run fmt
+```
+
 Run the linter:
 
 ```shell
 pnpm run lint
-# OR check for lint and fix issues that can be automatically
+```
+
+Fix linting errors automatically:
+
+```shell
 pnpm run lint:fix
 ```
 
 Run tests:
 
-```shell
+````shell
 # Test and watch for changes
 pnpm test
 
 # Run tests once
 pnpm run test:run
 
-# Run coverage checker
-pnpm run test:coverage
-```
-
-Shortcut to run typechecking, linting, and tests:
-
-```shell
-pnpm run check
-```
 
 Check for outdated dependencies (entire monorepo):
 
@@ -135,7 +141,7 @@ Check for outdated dependencies (entire monorepo):
 pnpm run outdated
 # Check for latest versions
 pnpm run outdated:latest
-```
+````
 
 Upgrade dependencies (entire monorepo):
 

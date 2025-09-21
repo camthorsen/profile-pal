@@ -1,7 +1,7 @@
 import { Label, Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react';
 import { type ReactElement } from 'react';
 
-import { CheckIcon, ChevronIcon } from './icons';
+import { CheckIcon, ChevronIcon } from './icons/index.ts';
 
 export interface LanguageOption {
   value: string;
@@ -20,6 +20,8 @@ export interface LanguageSelectorProps {
 const DEFAULT_LANGUAGES: LanguageOption[] = [
   { value: 'English', label: 'English' },
   { value: 'French', label: 'Français' },
+  { value: 'German', label: 'Deutsch' },
+  { value: 'Portuguese', label: 'Português' },
   { value: 'Spanish', label: 'Español' },
 ];
 

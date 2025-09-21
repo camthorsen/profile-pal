@@ -2,9 +2,9 @@ import dynamic from 'next/dynamic';
 import type { ChangeEvent, ReactElement } from 'react';
 
 import { DragDropInput } from '@/components/DragDropInput.tsx';
+import { SuccessIcon, UploadIcon } from '@/components/icons/index.ts';
 import { SecondaryButton } from '@/components/SecondaryButton.tsx';
 import { Stopwatch } from '@/components/Stopwatch.tsx';
-import { SuccessIcon, UploadIcon } from '@/components/icons/index.ts';
 import { cn } from '@/utils/cn.ts';
 
 const ReactMic = dynamic(() => import('react-mic').then((mod) => mod.ReactMic), {
@@ -70,7 +70,7 @@ export function AudioSection({
             className="w-full"
             onStop={onStop}
             onData={onData}
-            mimeType="audio/webm" // record as WebM (reasonable bitrate)
+            mimeType="audio/webm" // record as WebM (has reasonable bitrate)
             strokeColor="#4CAF50"
             backgroundColor="#f0f0f0"
           />
