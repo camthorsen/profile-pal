@@ -268,6 +268,7 @@ async function createWithContinuation(baseOpts: Record<string, unknown>, maxCont
       previous_response_id: prevId,
       model: model(res) || (typeof baseOpts.model === 'string' ? baseOpts.model : 'gpt-5-mini'),
       // Keep safe knobs only:
+      input: baseOpts.input,
       reasoning: baseOpts.reasoning,
       text: baseOpts.text,
       max_output_tokens: typeof baseOpts.max_output_tokens === 'number' ? baseOpts.max_output_tokens : 512,
@@ -322,7 +323,7 @@ async function extractFacts(transcript: string, labels?: string[]): Promise<Anim
       verbosity: 'low',
     },
     reasoning: { effort: 'low' },
-    max_output_tokens: 512,
+    max_output_tokens: 1536,
   });
 
   if (DEBUG) {
@@ -376,7 +377,7 @@ async function composeProfile(
     ],
     text: { verbosity: 'low' },
     reasoning: { effort: 'low' },
-    max_output_tokens: 640, // give the writer more room than the extractor
+    max_output_tokens: 1024, // give the writer more room than the extractor
   });
 
   if (DEBUG) {
@@ -445,7 +446,7 @@ export async function summarizeWithOpenAI(
       ],
       text: { verbosity: 'low' },
       reasoning: { effort: 'low' },
-      max_output_tokens: 640,
+      max_output_tokens: 1024,
     });
     profile = collectText(fallback).trim();
   }
